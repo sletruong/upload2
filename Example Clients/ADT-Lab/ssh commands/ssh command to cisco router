@@ -1,0 +1,3 @@
+gcloud compute ssh --zone "us-central1-a" "admin@adt-lab-cisco-usc1" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac" --ssh-key-file="~/.ssh/adt-lab-cisco"
+
+gcloud compute ssh --zone "us-east4-a" "admin@adt-lab-cisco-use4" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac" --ssh-key-file="~/.ssh/adt-lab-cisco"

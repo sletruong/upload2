@@ -1,0 +1,151 @@
+# Intrazone Traffic Inspection VPC — Palo Alto NIC 3.
+# MTU 8896 for GENEVE encapsulation overhead.
+# AFTER_CLASSIC_FIREWALL: consistent with other Palo Alto producer VPCs.
+- name:
+    explicit: nsi-data-producer-03
+  description: "Intrazone Traffic Inspection VPC - Palo NIC3 data plane, MTU 8896"
+  mtu: 8896
+  firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+
+  subnetworks:
+    - name:
+        explicit: izti-s1-usc1
+      region: us-central1
+      ipv4_cidr: 192.168.51.0/24
+      description: "Intrazone Inspection subnet us-central1 - Palo NIC3 data plane"
+    - name:
+        explicit: izti-s1-use4
+      region: us-east4
+      ipv4_cidr: 192.168.151.0/24
+      description: "Intrazone Inspection subnet us-east4 - Palo NIC3 data plane"
+    - name:
+        explicit: izti-s1-usw2
+      region: us-west2
+      ipv4_cidr: 192.168.251.0/24
+      description: "Intrazone Inspection subnet us-west2 - Palo NIC3 data plane"
+
+  addresses:
+    # NSI GENEVE ILB VIPs — one per zone per region.
+    - name:
+        explicit: nsi-izti-vip-usc1-a
+      region: us-central1
+      subnetwork:
+        explicit: izti-s1-usc1
+      purpose: SHARED_LOADBALANCER_VIP
+      address_type: INTERNAL
+    - name:
+        explicit: nsi-izti-vip-usc1-b
+      region: us-central1
+      subnetwork:
+        explicit: izti-s1-usc1
+      purpose: SHARED_LOADBALANCER_VIP
+      address_type: INTERNAL
+    - name:
+        explicit: nsi-izti-vip-usc1-c
+      region: us-central1
+      subnetwork:
+        explicit: izti-s1-usc1
+      purpose: SHARED_LOADBALANCER_VIP
+      address_type: INTERNAL
+    - name:
+        explicit: nsi-izti-vip-use4-a
+      region: us-east4
+      subnetwork:
+        explicit: izti-s1-use4
+      purpose: SHARED_LOADBALANCER_VIP
+      address_type: INTERNAL
+    - name:
+        explicit: nsi-izti-vip-use4-b
+      region: us-east4
+      subnetwork:
+        explicit: izti-s1-use4
+      purpose: SHARED_LOADBALANCER_VIP
+      address_type: INTERNAL
+    - name:
+        explicit: nsi-izti-vip-use4-c
+      region: us-east4
+      subnetwork:
+        explicit: izti-s1-use4
+      purpose: SHARED_LOADBALANCER_VIP
+      address_type: INTERNAL
+    - name:
+        explicit: nsi-izti-vip-usw2-a
+      region: us-west2
+      subnetwork:
+        explicit: izti-s1-usw2
+      purpose: SHARED_LOADBALANCER_VIP
+      address_type: INTERNAL
+    - name:
+        explicit: nsi-izti-vip-usw2-b
+      region: us-west2
+      subnetwork:
+        explicit: izti-s1-usw2
+      purpose: SHARED_LOADBALANCER_VIP
+      address_type: INTERNAL
+    - name:
+        explicit: nsi-izti-vip-usw2-c
+      region: us-west2
+      subnetwork:
+        explicit: izti-s1-usw2
+      purpose: SHARED_LOADBALANCER_VIP
+      address_type: INTERNAL
+    # Palo Alto VM-Series data plane NIC3 — reserved per zone per region.
+    - name:
+        explicit: palo-usc1-a-izti
+      region: us-central1
+      subnetwork:
+        explicit: izti-s1-usc1
+      ipv4_address: 192.168.51.10
+    - name:
+        explicit: palo-usc1-b-izti
+      region: us-central1
+      subnetwork:
+        explicit: izti-s1-usc1
+      ipv4_address: 192.168.51.11
+    - name:
+        explicit: palo-usc1-c-izti
+      region: us-central1
+      subnetwork:
+        explicit: izti-s1-usc1
+      ipv4_address: 192.168.51.12
+    - name:
+        explicit: palo-use4-a-izti
+      region: us-east4
+      subnetwork:
+        explicit: izti-s1-use4
+      ipv4_address: 192.168.151.10
+    - name:
+        explicit: palo-use4-b-izti
+      region: us-east4
+      subnetwork:
+        explicit: izti-s1-use4
+      ipv4_address: 192.168.151.11
+    - name:
+        explicit: palo-usw2-a-izti
+      region: us-west2
+      subnetwork:
+        explicit: izti-s1-usw2
+      ipv4_address: 192.168.251.10
+    - name:
+        explicit: palo-usw2-b-izti
+      region: us-west2
+      subnetwork:
+        explicit: izti-s1-usw2
+      ipv4_address: 192.168.251.11
+
+  firewall_rules:
+    - name:
+        explicit: fw-izti-allow-healthcheck
+      description: "Allow GCP health check probes to Palo Alto data plane NIC3 (TCP 22/443)"
+      direction: INGRESS
+      action: allow
+      source_ranges:
+        - 35.191.0.0/16
+        - 130.211.0.0/22
+        - 209.85.152.0/22
+        - 209.85.204.0/22
+      target_service_accounts:
+        - sa-palo@rteller-demo-svc-e265-aaac.iam.gserviceaccount.com
+      layer4:
+        - protocol: tcp
+          ports: ["22", "443"]

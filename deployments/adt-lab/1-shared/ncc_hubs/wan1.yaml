@@ -1,0 +1,11 @@
+# WAN1 NCC hub — MESH topology.
+# Members: Cisco C8000v RA spoke (WAN1 leg, NIC 1) + wan1-vpc1 VPC spoke.
+# Route exchange: all spokes in a mesh hub exchange with each other — the
+# Cisco advertises customer WAN1 routes into the fabric and vice-versa.
+- name:
+    explicit: wan1-ncc-hub
+  topology: mesh
+  description: "WAN1 NCC hub - Cisco RA spoke + wan1 VPC spoke"
+  project_id: rteller-demo-svc-e265-aaac
+  auto_accept:
+    default: [rteller-demo-svc-e265-aaac]

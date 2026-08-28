@@ -1,0 +1,11 @@
+  non-prod-gaurav-maheshwari                    rteller-demo-svc-e265-aaac
+  ──────────────────────────                    ──────────────────────────
+  vpc-cluster2 (ASN 65203)  ←── HA VPN ──────► wan1-vpc1 (ASN 65101)
+    nonprod-cluster2-gw                          wan1-to-cluster2-gw
+     
+    169.254.3.2 / 169.254.3.6                   169.254.3.1 / 169.254.3.5
+
+  vpc-cluster3 (ASN 65204)  ←── HA VPN ──────► wan2-vpc1 (ASN 65102)
+    nonprod-cluster3-gw                          wan2-to-cluster3-gw
+    nonprod-cluster3-cr                          wan2_vpn_cr  (reused)
+    169.254.4.2 / 169.254.4.6                   169.254.4.1 / 169.254.4.5

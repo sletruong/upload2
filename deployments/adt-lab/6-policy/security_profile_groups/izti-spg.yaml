@@ -1,0 +1,14 @@
+# NSI INTERCEPT SPG — intrazone workload traffic (Palo NIC3).
+# Available for steering same-zone workload traffic to the intrazone-traffic-
+# inspection VPC. Zone-level discrimination is done in PAN-OS policy, not
+# at the GCP GNFP layer — this SPG is wired for future use or operator-
+# directed rules with target tags.
+#
+# endpoint_group is {explicit:} into tier-5 (adt-lab-izti-inspect).
+- name:
+    explicit: spg-adt-lab-izti
+  description: "ADT-Lab NSI INTERCEPT SPG — intrazone workload traffic (Palo NIC3)"
+  project_id: rteller-demo-svc-e265-aaac
+  kind: INTERCEPT
+  endpoint_group:
+    explicit: adt-lab-izti-inspect

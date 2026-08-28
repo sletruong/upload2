@@ -1,0 +1,48 @@
+# # Palo Alto VM-Series — us-central1, zone b. HA peer of palo-usc1-a.
+# - name:
+#     explicit: adt-lab-palo-usc1-b
+#   description: "Palo Alto VM-Series bundle3 — us-central1-b, NSI GENEVE intercept"
+#   project_id: rteller-demo-svc-e265-aaac
+#   zone: us-central1-b
+#   vendor: palo_alto
+#   image:
+#     resolved: projects/paloaltonetworksgcp-public/global/images/vmseries-flex-bundle3-1217
+#   machine_type: c4-standard-4
+#   min_cpu_platform: "Intel Emerald Rapids"
+#   network_tags: [adt-lab-palo, allow-ssh]
+#   bootstrap:
+#     ssh_keys:
+#       - explicit: adt-lab-palo-ssh-key
+#     palo:
+#       geneve_inspect: true
+#       dhcp_client: true
+#       dns_primary: 169.254.169.254
+#   nics:
+#     - subnetwork:
+#         explicit: lan-mgmt-vpc-s1-usc1
+#       private_address: 192.168.21.11
+#     - subnetwork:
+#         explicit: ewti-s1-usc1
+#       private_address: 192.168.31.11
+#     - subnetwork:
+#         explicit: nsti-s1-usc1
+#       private_address: 192.168.41.11
+#     - subnetwork:
+#         explicit: izti-s1-usc1
+#       private_address: 192.168.51.11
+#     - subnetwork:
+#         explicit: ieti-s1-usc1
+#       private_address: 192.168.61.11
+#   ilbs:
+#     - join:
+#         explicit: nsi-usc1-b
+#       nic: 1
+#     - join:
+#         explicit: nsi-nsti-usc1-b
+#       nic: 2
+#     - join:
+#         explicit: nsi-izti-usc1-b
+#       nic: 3
+#     - join:
+#         explicit: nsi-ieti-usc1-b
+#       nic: 4

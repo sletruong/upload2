@@ -1,0 +1,21 @@
+# Secure tag — north-south traffic inspection scope.
+# VMs in lan-workload-vpc1 that carry the internet-egress value have their
+# internet-bound egress (and internet-sourced ingress) steered through the
+# north-south inspection path (Palo NIC2, nsti SPG).
+#
+# Apply this tag to workload VMs at instance creation or via
+# google_tags_tag_binding. Untagged workload VMs are NOT steered through
+# NSTI — remove the value to opt a VM out of internet inspection.
+#
+# After `terraform apply` in 1-shared, run:
+#   terraform output -json secure_tags
+# and copy the tagValues/ID for nsti-inspection/internet-egress into
+# deployments/adt-lab/6-policy/firewall_policies/global/
+#   adt-lab-workload-policy.rules/intercept.yaml  (target_secure_tags resolved:)
+- name:
+    explicit: nsti-inspection
+  description: "ADT-Lab north-south inspection scope — internet-egress workload VMs"
+  values:
+    - name:
+        explicit: internet-egress
+      description: "VM internet traffic steered through north-south inspection (Palo NIC2)"

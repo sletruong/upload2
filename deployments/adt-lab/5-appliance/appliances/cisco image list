@@ -1,0 +1,79 @@
+gcloud compute images list --project=cisco-public --no-standard-images --filter="name~'cisco-c8k'"
+   --format="table(name,family,status,creationTimestamp)" --sort-by="~creationTimestamp" 2>/dev/null
+NAME                         PROJECT       FAMILY  DEPRECATED  STATUS
+cisco-c8k-17-04-01a          cisco-public                      READY
+cisco-c8k-17-04-02           cisco-public                      READY
+cisco-c8k-17-05-01a          cisco-public                      READY
+cisco-c8k-17-06-01a          cisco-public                      READY
+cisco-c8k-17-06-02           cisco-public                      READY
+cisco-c8k-17-06-03a          cisco-public                      READY
+cisco-c8k-17-06-04           cisco-public                      READY
+cisco-c8k-17-06-05           cisco-public                      READY
+cisco-c8k-17-06-05a          cisco-public                      READY
+cisco-c8k-17-06-06           cisco-public                      READY
+cisco-c8k-17-06-06a          cisco-public                      READY
+cisco-c8k-17-06-07           cisco-public                      READY
+cisco-c8k-17-06-08a          cisco-public                      READY
+cisco-c8k-17-06-08a-byol     cisco-public                      READY
+cisco-c8k-17-07-01a          cisco-public                      READY
+cisco-c8k-17-07-02           cisco-public                      READY
+cisco-c8k-17-08-01a          cisco-public                      READY
+cisco-c8k-17-09-01a          cisco-public                      READY
+cisco-c8k-17-09-02a          cisco-public                      READY
+cisco-c8k-17-09-03a          cisco-public                      READY
+cisco-c8k-17-09-04           cisco-public                      READY
+cisco-c8k-17-09-04a          cisco-public                      READY
+cisco-c8k-17-09-05a          cisco-public                      READY
+cisco-c8k-17-09-05e          cisco-public                      READY
+cisco-c8k-17-09-06           cisco-public                      READY
+cisco-c8k-17-09-06-byol      cisco-public                      READY
+cisco-c8k-17-09-07a          cisco-public                      READY
+cisco-c8k-17-09-07b          cisco-public                      READY
+cisco-c8k-17-09-08           cisco-public                      READY
+cisco-c8k-17-09-09           cisco-public                      READY
+cisco-c8k-17-10-01a          cisco-public                      READY
+cisco-c8k-17-11-01a          cisco-public                      READY
+cisco-c8k-17-12-01a          cisco-public                      READY
+cisco-c8k-17-12-02           cisco-public                      READY
+cisco-c8k-17-12-03           cisco-public                      READY
+cisco-c8k-17-12-04           cisco-public                      READY
+cisco-c8k-17-12-04a          cisco-public                      READY
+cisco-c8k-17-12-04b          cisco-public                      READY
+cisco-c8k-17-12-05a          cisco-public                      READY
+cisco-c8k-17-12-05b          cisco-public                      READY
+cisco-c8k-17-12-06           cisco-public                      READY
+cisco-c8k-17-12-07b          cisco-public                      READY
+cisco-c8k-17-12-08           cisco-public                      READY
+cisco-c8k-17-13-01a          cisco-public                      READY
+cisco-c8k-17-13-01a-byol     cisco-public                      READY
+cisco-c8k-17-14-01a          cisco-public                      READY
+cisco-c8k-17-14-01a-byol     cisco-public                      READY
+cisco-c8k-17-15-01a          cisco-public                      READY
+cisco-c8k-17-15-02a          cisco-public                      READY
+cisco-c8k-17-15-03a          cisco-public                      READY
+cisco-c8k-17-15-04           cisco-public                      READY
+cisco-c8k-17-15-04c          cisco-public                      READY
+cisco-c8k-17-15-05           cisco-public                      READY
+cisco-c8k-17-15-06           cisco-public                      READY
+cisco-c8k-17-16-01a          cisco-public                      READY
+cisco-c8k-17-16-01a-byol     cisco-public                      READY
+cisco-c8k-17-16-01a-test     cisco-public                      READY
+cisco-c8k-17-18-01-eft30fc1  cisco-public                      READY
+cisco-c8k-17-18-01a          cisco-public                      READY
+cisco-c8k-17-18-01a-eft1     cisco-public                      READY
+cisco-c8k-17-18-01a-eft25    cisco-public                      READY
+cisco-c8k-17-18-02           cisco-public                      READY
+cisco-c8k-17-18-03a          cisco-public                      READY
+cisco-c8k-17-18-04           cisco-public                      READY
+cisco-c8k-26-01-01           cisco-public                      READY
+cisco-c8k-26-01-02           cisco-public                      READY
+
+
+
+rm 'module.appliance.google_compute_instance_group.partition["rteller-demo-svc-e265-aaac|us-central1-b|nsi-ieti-usc1-b#4#false,nsi-izti-usc1-b#3#false,nsi-nsti-usc1-b#2#false,nsi-usc1-b#1#false"]: Destroying... [id=projects/rteller-demo-svc-e265-aaac/zones/us-central1-b/instanceGroups/aig-0a0cb52e]
+module.appliance.google_compute_instance_group.partition["rteller-demo-svc-e265-aaac|us-west2-b|nsi-ieti-usw2-b#4#false,nsi-izti-usw2-b#3#false,nsi-nsti-usw2-b#2#false,nsi-usw2-b#1#false"]: Destroying... [id=projects/rteller-demo-svc-e265-aaac/zones/us-west2-b/instanceGroups/aig-0af50bf1]
+module.appliance.google_compute_instance_group.partition["rteller-demo-svc-e265-aaac|us-central1-c|nsi-ieti-usc1-c#4#false,nsi-izti-usc1-c#3#false,nsi-nsti-usc1-c#2#false,nsi-usc1-c#1#false"]: Destroying... [id=projects/rteller-demo-svc-e265-aaac/zones/us-central1-c/instanceGroups/aig-670297f8]
+module.appliance.google_compute_instance_group.partition["rteller-demo-svc-e265-aaac|us-west2-a|nsi-ieti-usw2-a#4#false,nsi-izti-usw2-a#3#false,nsi-nsti-usw2-a#2#false,nsi-usw2-a#1#false"]: Destroying... [id=projects/rteller-demo-svc-e265-aaac/zones/us-west2-a/instanceGroups/aig-9318a289]
+module.appliance.google_compute_instance_group.partition["rteller-demo-svc-e265-aaac|us-central1-a|nsi-ieti-usc1-a#4#false,nsi-izti-usc1-a#3#false,nsi-nsti-usc1-a#2#false,nsi-usc1-a#1#false"]: Destroying... [id=projects/rteller-demo-svc-e265-aaac/zones/us-central1-a/instanceGroups/aig-bd6a06a6]
+module.appliance.google_compute_instance_group.partition["rteller-demo-svc-e265-aaac|us-east4-a|nsi-ieti-use4-a#4#false,nsi-izti-use4-a#3#false,nsi-nsti-use4-a#2#false,nsi-use4-a#1#false"]: Destroying... [id=projects/rteller-demo-svc-e265-aaac/zones/us-east4-a/instanceGroups/aig-bff79504]
+module.appliance.google_compute_instance_group.partition["rteller-demo-svc-e265-aaac|us-east4-b|nsi-ieti-use4-b#4#false,nsi-izti-use4-b#3#false,nsi-nsti-use4-b#2#false,nsi-use4-b#1#false"]: Destroying... [id=projects/rteller-demo-svc-e265-aaac/zones/us-east4-b/instanceGroups/aig-31ead2b4]

@@ -1,0 +1,309 @@
+Building configuration...
+
+Current configuration : 9788 bytes
+!
+! Last configuration change at 21:35:52 UTC Tue Aug 25 2026
+!
+version 17.14
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+platform qfp utilization monitor load 80
+platform sslvpn use-pd
+platform console serial
+!
+hostname adt-lab-cisco-usc1-a
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition GS
+ rd 100:100
+ !
+ address-family ipv4
+ exit-address-family
+!
+logging persistent size 1000000 filesize 8192 immediate
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authorization exec default local none 
+!
+!
+aaa session-id common
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!         
+!
+!
+!
+login on-success log
+!
+!
+subscriber templating
+!
+!
+!
+crypto pki trustpoint TP-self-signed-3656737244
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3656737244
+ revocation-check none
+ rsakeypair TP-self-signed-3656737244
+ hash sha256
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment pkcs12
+ revocation-check crl
+ hash sha256
+!
+!
+crypto pki certificate chain TP-self-signed-3656737244
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  31312F30 2D060355 04030C26 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 33363536 37333732 3434301E 170D3236 30383137 31363238 
+  34315A17 0D333630 38313631 36323834 315A3031 312F302D 06035504 030C2649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D33 36353637 
+  33373234 34308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 
+  0A028201 0100B97D 4AC291C5 051E71AB 36037FF1 88D7A9FC 6447BBBF 5AA4E3CE 
+  8A9B6028 47C87AE9 759008B2 19EA323A 773C7139 8EE06C8E 5F40D9BC D1E56282 
+  A823C42F 1050F754 B07AF1BC 31788747 3D80FEC3 C1699E50 930D9054 E7E573FC 
+  51253952 39A956B2 BB143C8E DBC9D2CE 52F8CAA1 5305A32D EB34F3C7 CC7FC6BD 
+  005B5CEC BF5F0D99 995F8566 496FE276 137BC6F3 1B572999 1939424F D6B24461 
+  B3F313CB 010225BB 47E4841A A1001A77 0BE117DA 3B3209D5 831F67FD 9F5DAD14 
+  76A494C0 FB5D2173 B26DCF11 F2FE8C76 331A5280 22B5F9E3 80115044 F09C5E11 
+  24FFD4D5 E8EF1B43 E05BB229 D3DF56F1 25B5DCD0 32391871 AE179964 B56D1C9F 
+  B001CD05 42EF0203 010001A3 53305130 1D060355 1D0E0416 04141E1B 97FDA10E 
+  6C368A47 3A736C0B 99532C4E 9AB5301F 0603551D 23041830 1680141E 1B97FDA1 
+  0E6C368A 473A736C 0B99532C 4E9AB530 0F060355 1D130101 FF040530 030101FF 
+  300D0609 2A864886 F70D0101 0B050003 82010100 0D6770F0 E449E700 136DED00 
+  220EC014 6D456F9E 354506FB C31BAA15 48C20031 BC003361 D487C3F3 7130ECFE 
+  FD711225 278A6A91 64CA72DD CAEAA01D C856133D F079DA30 1497C62E 34CAE137 
+  D916CB91 B9C67FAF 74E1E0B9 D82DF418 7CA803F0 640D882F 9B7C41AA 6A938E4D 
+  8E542BA9 8A85DDE0 F8089EA6 95B9BD20 BA3F2465 5096C230 09767A3D B1C58221 
+  697688BB 26EAE489 991A85C0 E78D1586 24A89775 352CED3C E904A8FB 45BC5BEE 
+  3DDF45A1 CACEFCC2 AAA4ECB8 988CBFE0 34275184 94BC38F5 E3EFA66F 8CD19802 
+  0A95D164 6A05CD22 3861AC52 540D37A0 8598F7C8 0E5F0D8B 08AC99BB 7276D143 
+  1B223B01 0EF900BD 1B2655BB 477617E7 64D94785
+        quit
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B 
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+        quit
+!
+!
+license udi pid C8000V sn 92THH20HSY7
+memory free low-watermark processor 225109
+diagnostic bootup level minimal
+!
+!
+!
+!         
+username admin privilege 15 secret 9 $9$f3mKuxqb/togFk$o9LA3vjuMt/ylkoDZmDHLg9dyisFeESenMjxne2RjlE
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback99
+ ip address 10.100.99.41 255.255.255.255
+!         
+interface VirtualPortGroup0
+ vrf forwarding GS
+ ip address 192.168.35.101 255.255.255.0
+ ip nat inside
+!
+interface GigabitEthernet1
+ ip address dhcp
+ negotiation auto
+!
+interface GigabitEthernet2
+ ip address dhcp
+ negotiation auto
+!
+interface GigabitEthernet3
+ ip address dhcp
+ negotiation auto
+!
+interface GigabitEthernet4
+ ip address dhcp
+ negotiation auto
+!
+router bgp 65100
+ bgp router-id 172.16.1.3
+ bgp log-neighbor-changes
+ neighbor 10.0.1.5 remote-as 65035
+ neighbor 10.0.1.5 description CR-wan1-usc1-nic0
+ neighbor 10.0.1.5 ebgp-multihop 2
+ neighbor 10.0.1.6 remote-as 65035
+ neighbor 10.0.1.6 description CR-wan1-usc1-nic1
+ neighbor 10.0.1.6 ebgp-multihop 2
+ neighbor 10.0.11.5 remote-as 65037
+ neighbor 10.0.11.5 description CR-wan2-usc1-nic0
+ neighbor 10.0.11.5 ebgp-multihop 2
+ neighbor 10.0.11.6 remote-as 65037
+ neighbor 10.0.11.6 description CR-wan2-usc1-nic1
+ neighbor 10.0.11.6 ebgp-multihop 2
+ neighbor 172.16.1.4 remote-as 65100
+ neighbor 172.16.1.4 timers 20 60
+ neighbor 172.16.1.5 remote-as 65033
+ neighbor 172.16.1.5 description CR-lan-usc1-nic0
+ neighbor 172.16.1.5 ebgp-multihop 2
+ neighbor 172.16.1.6 remote-as 65033
+ neighbor 172.16.1.6 description CR-lan-usc1-nic1
+ neighbor 172.16.1.6 ebgp-multihop 2
+ !        
+ address-family ipv4
+  network 10.100.99.41 mask 255.255.255.255
+  neighbor 10.0.1.5 activate
+  neighbor 10.0.1.5 route-map RM-INT-OUT out
+  neighbor 10.0.1.6 activate
+  neighbor 10.0.1.6 route-map RM-INT-OUT out
+  neighbor 10.0.11.5 activate
+  neighbor 10.0.11.5 route-map RM-IN-OUT out
+  neighbor 10.0.11.6 activate
+  neighbor 10.0.11.6 route-map RM-INT-OUT out
+  neighbor 172.16.1.4 activate
+  neighbor 172.16.1.4 route-map RM-HB-IN in
+  neighbor 172.16.1.4 route-map RM-HB-OUT out
+  neighbor 172.16.1.5 activate
+  neighbor 172.16.1.5 route-map RM-INT-OUT out
+  neighbor 172.16.1.6 activate
+  neighbor 172.16.1.6 route-map RM-INT-OUT out
+ exit-address-family
+!
+iox
+ip forward-protocol nd
+ip tcp window-size 8192
+!
+ip bgp-community new-format
+ip community-list standard CM-HB permit 65100:99
+ip http server
+ip http secure-server
+ip route vrf GS 0.0.0.0 0.0.0.0 GigabitEthernet1 192.168.21.1 global
+ip nat inside source list GS_NAT_ACL interface GigabitEthernet1 vrf GS overload
+ip ssh bulk-mode 131072
+ip ssh rsa keypair-name ssh-key
+ip ssh pubkey-chain
+ username admin
+  key-hash ssh-ed25519 54A289DD5FC177FBEC5E93F049FB40FF 
+ip ssh server algorithm publickey ecdsa-sha2-nistp256 ecdsa-sha2-nistp384 ecdsa-sha2-nistp521 ssh-ed25519 ssh-rsa x509v3-ecdsa-sha2-nistp256 x509v3-ecdsa-sha2-nistp384 x509v3-ecdsa-sha2-nistp521
+ip scp server enable
+!
+!
+ip prefix-list PL-HB-IN seq 10 permit 10.100.99.42/32
+!
+ip prefix-list PL-HB-OWN seq 10 permit 10.100.99.41/32
+!
+ip prefix-list PL-HEATBEAT seq 10 permit 10.100.99.42/32
+!         
+ip prefix-list PL-SUMMARY seq 10 permit 10.0.1.0/24
+ip prefix-list PL-SUMMARY seq 15 permit 10.0.2.0/24
+ip prefix-list PL-SUMMARY seq 20 permit 10.0.11.0/24
+ip prefix-list PL-SUMMARY seq 25 permit 10.0.12.0/24
+ip prefix-list PL-SUMMARY seq 30 permit 10.0.101.0/24
+ip prefix-list PL-SUMMARY seq 35 permit 10.0.102.0/24
+ip prefix-list PL-SUMMARY seq 40 permit 10.0.111.0/24
+ip prefix-list PL-SUMMARY seq 45 permit 10.0.112.0/24
+ip prefix-list PL-SUMMARY seq 50 permit 172.16.1.0/24
+ip prefix-list PL-SUMMARY seq 55 permit 172.16.101.0/24
+ip prefix-list PL-SUMMARY seq 60 permit 192.168.1.0/24
+ip prefix-list PL-SUMMARY seq 65 permit 192.168.2.0/24
+ip prefix-list PL-SUMMARY seq 70 permit 192.168.21.0/24
+ip prefix-list PL-SUMMARY seq 75 permit 192.168.101.0/24
+ip prefix-list PL-SUMMARY seq 80 permit 192.168.102.0/24
+ip prefix-list PL-SUMMARY seq 85 permit 192.168.121.0/24
+!
+ip access-list standard GS_NAT_ACL
+ 10 permit 192.168.35.0 0.0.0.255
+!
+!
+route-map RM-HB-OUT permit 10 
+ match ip address prefix-list PL-HB-OWN
+!
+route-map RM-HB-OUT deny 20 
+!
+route-map RM-HB-IN permit 10 
+ match ip address prefix-list PL-HB-IN
+ set community 65100:99
+!         
+route-map RM-HB-IN deny 20 
+!
+route-map RM-EXIST permit 10 
+ match ip address prefix-list PL-HEATBEAT
+ match community CM-HB
+!
+route-map RM-INT-OUT permit 10 
+ match ip address prefix-list PL-SUMMARY
+ set metric 125
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+line vty 0 4
+ transport input ssh
+line vty 5 20
+ transport input ssh
+!
+!
+!
+!
+!
+!         
+!
+app-hosting appid guestshell
+ app-vnic gateway1 virtualportgroup 0 guest-interface 0
+  guest-ipaddress 192.168.35.102 netmask 255.255.255.0
+ app-default-gateway 192.168.35.101 guest-interface 0
+ name-server0 169.254.169.254
+ name-server1 8.8.8.8
+end

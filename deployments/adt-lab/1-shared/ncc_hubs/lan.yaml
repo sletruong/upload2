@@ -1,0 +1,9 @@
+# LAN NCC hub — MESH topology.
+# Members: Cisco C8000v RA spoke (LAN leg, NIC 3) + lan-mgmt-vpc + lan-workload-vpc1 VPC spokes.
+- name:
+    explicit: lan-ncc-hub
+  topology: mesh
+  description: "LAN NCC hub - Cisco RA spoke + mgmt + workload VPC spokes"
+  project_id: rteller-demo-svc-e265-aaac
+  auto_accept:
+    default: [rteller-demo-svc-e265-aaac]

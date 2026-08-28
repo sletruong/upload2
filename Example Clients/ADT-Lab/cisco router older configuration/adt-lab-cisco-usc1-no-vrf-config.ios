@@ -1,0 +1,73 @@
+configure terminal
+!
+! ─── Step 1: Remove VRF-based BGP address-families ─────────────────────────────
+router bgp 65100
+ no address-family ipv4 vrf WAN1
+ no address-family ipv4 vrf WAN2
+ no address-family ipv4 vrf LAN-TRANSIT
+exit
+!
+! ─── Step 2: Remove VRF forwarding from interfaces and restore static IPs ───────
+! Note: 'no vrf forwarding' wipes the interface IP — re-apply immediately after.
+!
+interface GigabitEthernet2
+ no vrf forwarding WAN1
+ ip address 10.0.1.2 255.255.255.0
+ no shutdown
+exit
+!
+interface GigabitEthernet3
+ no vrf forwarding WAN2
+ ip address 10.0.11.2 255.255.255.0
+ no shutdown
+exit
+!
+interface GigabitEthernet4
+ no vrf forwarding LAN-TRANSIT
+ ip address 172.16.1.2 255.255.255.0
+ no shutdown
+exit
+!
+! ─── Step 3: Remove VRF definitions ─────────────────────────────────────────────
+no vrf definition WAN1
+no vrf definition WAN2
+no vrf definition LAN-TRANSIT
+!
+! ─── Step 4: BGP — global table, all neighbours ─────────────────────────────────
+! Cisco ASN: 65100
+! All WAN1, WAN2, and LAN-TRANSIT routes land in the global routing table.
+! The Cisco router can forward between all three segments without VRF isolation.
+!
+router bgp 65100
+ bgp log-neighbor-changes
+ !
+ ! WAN1 — Cloud Router ASN 65035, NCC interfaces 10.0.1.3 / 10.0.1.4
+ neighbor 10.0.1.3 remote-as 65035
+ neighbor 10.0.1.3 ebgp-multihop 2
+ neighbor 10.0.1.4 remote-as 65035
+ neighbor 10.0.1.4 ebgp-multihop 2
+ !
+ ! WAN2 — Cloud Router ASN 65037, NCC interfaces 10.0.11.3 / 10.0.11.4
+ neighbor 10.0.11.3 remote-as 65037
+ neighbor 10.0.11.3 ebgp-multihop 2
+ neighbor 10.0.11.4 remote-as 65037
+ neighbor 10.0.11.4 ebgp-multihop 2
+ !
+ ! LAN-TRANSIT — Cloud Router ASN 65033, NCC interfaces 172.16.1.3 / 172.16.1.4
+ neighbor 172.16.1.3 remote-as 65033
+ neighbor 172.16.1.3 ebgp-multihop 2
+ neighbor 172.16.1.4 remote-as 65033
+ neighbor 172.16.1.4 ebgp-multihop 2
+ !
+ address-family ipv4
+  neighbor 10.0.1.3 activate
+  neighbor 10.0.1.4 activate
+  neighbor 10.0.11.3 activate
+  neighbor 10.0.11.4 activate
+  neighbor 172.16.1.3 activate
+  neighbor 172.16.1.4 activate
+ exit-address-family
+exit
+!
+end
+write memory

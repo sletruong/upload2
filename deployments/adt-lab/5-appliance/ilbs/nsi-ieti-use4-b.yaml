@@ -1,0 +1,27 @@
+# NSI GENEVE ILB — use4-b, NIC4 (interzone-traffic-inspection).
+- name:
+    explicit: nsi-ieti-use4-b
+  description: "NSI GENEVE ILB use4-b — Interzone inspection NIC4"
+  project_id: rteller-demo-svc-e265-aaac
+  region: us-east4
+  network:
+    explicit: nsi-data-producer-04
+  subnetwork:
+    explicit: ieti-s1-use4
+  address:
+    explicit: nsi-ieti-vip-use4-b
+  protocol: UDP
+  ports: [6081]
+  global_access: false
+  health_check:
+    protocol: HTTPS
+    port: 443
+    request_path: /unauth/php/health.php
+    interval: 5
+    healthy_threshold: 2
+    unhealthy_threshold: 2
+  nsi:
+    join:
+      explicit: adt-lab-ieti-fleet
+    zone: us-east4-b
+    description: "NSI zonal intercept deployment for us-east4-b (interzone)"

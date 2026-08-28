@@ -1,0 +1,47 @@
+# ADT Lab deployment — Cisco C8000v RA spokes + Palo Alto VM-Series NSI intercept.
+#
+# Topology: THREE separate NCC hubs (wan1, wan2, lan), each a MESH hub.
+#   - wan1-ncc-hub: Cisco RA spoke (WAN1 leg) + wan1-vpc1 VPC spoke
+#   - wan2-ncc-hub: Cisco RA spoke (WAN2 leg) + wan2-vpc1 VPC spoke
+#   - lan-ncc-hub:  Cisco RA spoke (LAN leg)  + lan-mgmt-vpc + lan-workload-vpc1 VPC spokes
+#
+# Intercept: NSI INTERCEPT in-band. Palo Alto VM-Series (bundle3) terminates
+# GENEVE on east-west-traffic-inspection NIC (nic1). Consumer VPCs: wan1, wan2,
+# lan-transit, lan-workload-vpc1, lan-mgmt.
+#
+# Regions: us-central1 (usc1), us-east4 (use4), us-west2 (usw2); zones a+b for
+# appliances, a+b+c for NSI intercept deployments.
+#
+# Apply order: 1-shared -> 2-fabric -> 5-appliance -> 6-policy
+# Destroy order: 6-policy -> 5-appliance -> 2-fabric -> 1-shared
+
+schema_version: "2.0.0"
+
+deployment:
+  code: adt1
+  description: "ADT Lab - Cisco C8000v NCC RA spokes + Palo Alto VM-Series NSI intercept"
+  labels:
+    env: lab
+    appliance: cisco-palo
+    team: adt
+
+project:
+  project_id: rteller-demo-svc-e265-aaac
+
+backend:
+  type: gcs
+  bucket: adt-lab-gcp-tfstate
+
+regions:
+  - us-central1
+  - us-east4
+  - us-west2
+
+intent:
+  topology: mesh
+
+defaults:
+  network:
+    routing_mode: GLOBAL
+  subnetwork:
+    private_ip_google_access: true

@@ -1,0 +1,356 @@
+adt-lab-cisco-use4-a#sh run 
+Building configuration...
+
+Current configuration : 11392 bytes
+!
+! Last configuration change at 21:52:15 UTC Tue Aug 25 2026 by admin
+!
+version 17.14
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+platform qfp utilization monitor load 80
+platform sslvpn use-pd
+platform console serial
+!
+hostname adt-lab-cisco-use4-a
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition GS
+ rd 100:100
+ !
+ address-family ipv4
+ exit-address-family
+!
+logging persistent size 1000000 filesize 8192 immediate
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authorization exec default local none 
+!
+!
+aaa session-id common
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!         
+!
+!
+!
+login on-success log
+!
+!
+subscriber templating
+!
+!
+!
+crypto pki trustpoint TP-self-signed-342859986
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-342859986
+ revocation-check none
+ rsakeypair TP-self-signed-342859986
+ hash sha256
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment pkcs12
+ revocation-check crl
+ hash sha256
+!
+!
+crypto pki certificate chain TP-self-signed-342859986
+ certificate self-signed 01
+  3082032E 30820216 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  30312E30 2C060355 04030C25 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 33343238 35393938 36301E17 0D323630 38313731 36323833 
+  385A170D 33363038 31363136 32383338 5A303031 2E302C06 03550403 0C25494F 
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3334 32383539 
+  39383630 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 82010A02 
+  82010100 9D8A9C05 54037101 3EB2A394 1C0D2515 DF778352 4F0DA7A4 162E07F3 
+  95755F49 9C1EC8D7 27A348D1 C1135DA8 629F53AF 0AAB059C 1C98A28B 28F3FB65 
+  DC4E30E6 FA2F9A98 35BD9E74 75DCACBB 295E07D5 39413F89 22C58CB7 89F1E706 
+  B46CD9CF 6C51D7DE C65E37D6 C8FDF581 87A2DD5D 3C841C4E 9A8C9E55 9B0AF61D 
+  45BE00D7 970DDEA6 7E21D653 F7B3DE0D 54D86678 53FF34C0 DA9A3D24 661B9103 
+  DD50AB1C 76399C40 ECA1F757 B3081C12 207B35C9 0D9E764F C8085A9F 6C8FB8E9 
+  7965306B 6CF9FEA6 2C81411E 54079CB9 4BAADB2E 3D641181 C62D2BEA 421CE5D1 
+  0325BFA7 956921A9 FD3091AA CDA1E2A9 A49CC1A9 C80839B0 1AE8A6C8 83FD30DC 
+  6C8A2B01 02030100 01A35330 51301D06 03551D0E 04160414 E9F316EB 2663F0CF 
+  52BFB169 E4C5DF1F 54EF551E 301F0603 551D2304 18301680 14E9F316 EB2663F0 
+  CF52BFB1 69E4C5DF 1F54EF55 1E300F06 03551D13 0101FF04 05300301 01FF300D 
+  06092A86 4886F70D 01010B05 00038201 01001655 8B60F05B 9ED0C437 777A9BE5 
+  9EC8C35C 217CA171 D4FC3F41 8F18CF01 F0545FDB DD1AF434 E6C1A861 4D70AA1A 
+  5C6B6331 9A80ADE3 15B957D3 9079E3F9 D3483E8D 24433B85 0EDE7CE0 2FC64262 
+  3514F849 FB5A0E93 93C14D9A 19FACFDD 6E59A380 F43F7F52 1B7755E1 70F6E2AE 
+  3C6C26EA 4C3469E2 7ED795CD 987A9476 164B88A6 388C80D2 2E50BCAE 1328E727 
+  E3793DC0 29DCD7DE F0A60964 49C87691 22E5E554 B92BEDD1 72D3EC04 9A6BD1F5 
+  A6A531CA 4C44D96C FBDBF6B7 EEAFCB0B 608D6F65 D7DED356 F8D910EB 6EA92FA9 
+  663E1BD9 2A973BFB FA2DEE69 756FC7BC 656D62D4 36F75C7B AD506F12 C5844F18 
+  D40A7242 D8CEDFD3 88D45EC1 B1445562 BF09
+        quit
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B 
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+        quit
+!
+!
+license udi pid C8000V sn 9JY90NRWK28
+memory free low-watermark processor 225109
+diagnostic bootup level minimal
+!
+!
+!
+!         
+username admin privilege 15 secret 9 $9$6Df8QT8Zen9Y8E$dytR6ePh/vHZ/0N1AZEmkIn.92XDYWMPOSBBLe5UKI6
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback99
+ ip address 10.99.99.41 255.255.255.255
+!         
+interface VirtualPortGroup0
+ vrf forwarding GS
+ ip address 192.168.35.101 255.255.255.0
+ ip nat inside
+!
+interface GigabitEthernet1
+ ip address dhcp
+ ip nat outside
+ negotiation auto
+!
+interface GigabitEthernet2
+ ip address dhcp
+ negotiation auto
+!
+interface GigabitEthernet3
+ ip address dhcp
+ negotiation auto
+!
+interface GigabitEthernet4
+ ip address dhcp
+ ip tcp adjust-mss 1360
+ negotiation auto
+!
+router bgp 65100
+ bgp router-id 172.16.101.4
+ bgp log-neighbor-changes
+ neighbor 10.0.101.3 remote-as 65100
+ neighbor 10.0.101.3 timers 20 60
+ neighbor 10.0.101.5 remote-as 65036
+ neighbor 10.0.101.5 description CR-wan1-use4-nic0
+ neighbor 10.0.101.5 ebgp-multihop 2
+ neighbor 10.0.101.5 timers 20 60
+ neighbor 10.0.101.6 remote-as 65036
+ neighbor 10.0.101.6 description CR-wan1-use4-nic1
+ neighbor 10.0.101.6 ebgp-multihop 2
+ neighbor 10.0.101.6 timers 20 60
+ neighbor 10.0.111.4 remote-as 65100
+ neighbor 10.0.111.4 timers 20 60
+ neighbor 10.0.111.5 remote-as 65038
+ neighbor 10.0.111.5 description CR-wan2-use4-nic0
+ neighbor 10.0.111.5 ebgp-multihop 2
+ neighbor 10.0.111.5 timers 20 60
+ neighbor 10.0.111.6 remote-as 65038
+ neighbor 10.0.111.6 description CR-wan2-use4-nic1
+ neighbor 10.0.111.6 ebgp-multihop 2
+ neighbor 10.0.111.6 timers 20 60
+ neighbor 172.16.101.3 remote-as 65100
+ neighbor 172.16.101.3 update-source GigabitEthernet4
+ neighbor 172.16.101.3 timers 20 60
+ neighbor 172.16.101.5 remote-as 65034
+ neighbor 172.16.101.5 description CR-lan-use4-nic0
+ neighbor 172.16.101.5 ebgp-multihop 2
+ neighbor 172.16.101.5 timers 20 60
+ neighbor 172.16.101.6 remote-as 65034
+ neighbor 172.16.101.6 description CR-lan-use4-nic1
+ neighbor 172.16.101.6 ebgp-multihop 2
+ neighbor 172.16.101.6 timers 20 60
+ !
+ address-family ipv4
+  network 10.0.1.0 mask 255.255.255.0
+  network 10.0.2.0 mask 255.255.255.0
+  network 10.0.11.0 mask 255.255.255.0
+  network 10.0.12.0 mask 255.255.255.0
+  network 10.0.101.0 mask 255.255.255.0
+  network 10.0.102.0 mask 255.255.255.0
+  network 10.0.111.0 mask 255.255.255.0
+  network 10.0.112.0 mask 255.255.255.0
+  network 10.99.99.41 mask 255.255.255.255
+  network 172.16.1.0 mask 255.255.255.0
+  network 172.16.101.0 mask 255.255.255.0
+  network 192.168.1.0
+  network 192.168.2.0
+  network 192.168.21.0
+  network 192.168.101.0
+  network 192.168.102.0
+  network 192.168.121.0
+  neighbor 10.0.101.3 activate
+  neighbor 10.0.101.5 activate
+  neighbor 10.0.101.5 route-map RM-INT-OUT out
+  neighbor 10.0.101.6 activate
+  neighbor 10.0.101.6 advertise-map RM-DEGRADE-INT non-exist-map RM-EXIST
+  neighbor 10.0.111.4 activate
+  neighbor 10.0.111.4 route-map RM-HB-IN in
+  neighbor 10.0.111.4 route-map RM-HB-OUT out
+  neighbor 10.0.111.5 activate
+  neighbor 10.0.111.5 route-map RM-IN-OUT out
+  neighbor 10.0.111.6 activate
+  neighbor 10.0.111.6 advertise-map RM-DEGRADE-INT non-exist-map RM-EXIST
+  neighbor 172.16.101.3 activate
+  neighbor 172.16.101.3 route-map RM-HB-IN in
+  neighbor 172.16.101.3 route-map RM-HB-OUT out
+  neighbor 172.16.101.5 activate
+  neighbor 172.16.101.5 route-map RM-INT-OUT out
+  neighbor 172.16.101.6 activate
+  neighbor 172.16.101.6 advertise-map RM-DEGRADE-INT non-exist-map RM-EXIST
+ exit-address-family
+!
+iox
+ip forward-protocol nd
+ip tcp window-size 8192
+!
+ip bgp-community new-format
+ip community-list standard CM-HB permit 65100:99
+ip http server
+ip http secure-server
+ip route 10.0.0.0 255.255.0.0 Null0
+ip route 172.16.0.0 255.255.0.0 Null0
+ip route 192.16.0.0 255.255.0.0 Null0
+ip route vrf GS 0.0.0.0 0.0.0.0 GigabitEthernet1 192.168.121.1 global
+ip nat inside source list GS_NAT_ACL interface GigabitEthernet1 vrf GS overload
+ip ssh bulk-mode 131072
+ip ssh rsa keypair-name ssh-key
+ip ssh pubkey-chain
+ username admin
+  key-hash ssh-ed25519 54A289DD5FC177FBEC5E93F049FB40FF 
+ip ssh server algorithm publickey ecdsa-sha2-nistp256 ecdsa-sha2-nistp384 ecdsa-sha2-nistp521 ssh-ed25519 ssh-rsa x509v3-ecdsa-sha2-nistp256 x509v3-ecdsa-sha2-nistp384 x509v3-ecdsa-sha2-nistp521
+ip scp server enable
+!
+!         
+ip prefix-list PL-HB-IN seq 10 permit 10.99.99.42/32
+!
+ip prefix-list PL-HB-OWN seq 10 permit 10.99.99.41/32
+!
+ip prefix-list PL-HEATBEAT seq 10 permit 10.99.99.42/32
+!
+ip prefix-list PL-SUMMARY seq 10 permit 10.0.1.0/24
+ip prefix-list PL-SUMMARY seq 15 permit 10.0.2.0/24
+ip prefix-list PL-SUMMARY seq 20 permit 10.0.11.0/24
+ip prefix-list PL-SUMMARY seq 25 permit 10.0.12.0/24
+ip prefix-list PL-SUMMARY seq 30 permit 10.0.101.0/24
+ip prefix-list PL-SUMMARY seq 35 permit 10.0.102.0/24
+ip prefix-list PL-SUMMARY seq 40 permit 10.0.111.0/24
+ip prefix-list PL-SUMMARY seq 45 permit 10.0.112.0/24
+ip prefix-list PL-SUMMARY seq 50 permit 172.16.1.0/24
+ip prefix-list PL-SUMMARY seq 55 permit 172.16.101.0/24
+ip prefix-list PL-SUMMARY seq 60 permit 192.168.1.0/24
+ip prefix-list PL-SUMMARY seq 65 permit 192.168.2.0/24
+ip prefix-list PL-SUMMARY seq 70 permit 192.168.21.0/24
+ip prefix-list PL-SUMMARY seq 75 permit 192.168.101.0/24
+ip prefix-list PL-SUMMARY seq 80 permit 192.168.102.0/24
+ip prefix-list PL-SUMMARY seq 85 permit 192.168.121.0/24
+!
+ip access-list standard GS_NAT_ACL
+ 10 permit 192.168.35.0 0.0.0.255
+!
+!
+route-map RM-HB-OUT permit 10 
+ match ip address prefix-list PL-HB-OWN
+!         
+route-map RM-HB-OUT deny 20 
+!
+route-map RM-HB-IN permit 10 
+ match ip address prefix-list PL-HB-IN
+ set community 65100:99
+!
+route-map RM-HB-IN deny 20 
+!
+route-map RM-DEGRADE-INT permit 10 
+ match ip address prefix-list PL-SUMMARY
+ set metric 115
+!
+route-map RM-EXIST permit 10 
+ match ip address prefix-list PL-HEATBEAT
+ match community CM-HB
+!
+route-map RM-INT-OUT permit 10 
+ match ip address prefix-list PL-SUMMARY
+ set metric 125
+!
+route-map RM-INT-OUT deny 20 
+!
+route-map RM-HB permit 10 
+ match ip address prefix-list PL-HEATBEAT
+ match community CM-HB
+!
+!
+!
+!
+!         
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+line vty 0 4
+ transport input ssh
+line vty 5 20
+ transport input ssh
+!
+!
+!
+!
+!         
+!
+!
+app-hosting appid guestshell
+ app-vnic gateway1 virtualportgroup 0 guest-interface 0
+  guest-ipaddress 192.168.35.102 netmask 255.255.255.0
+ app-default-gateway 192.168.35.101 guest-interface 0
+ name-server0 169.254.169.254
+ name-server1 8.8.8.8
+end

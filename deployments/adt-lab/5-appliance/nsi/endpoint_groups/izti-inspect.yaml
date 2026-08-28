@@ -1,0 +1,19 @@
+# # NSI CONSUMER endpoint group — Intrazone traffic inspection.
+# # Intercepts workload-to-workload traffic within consumer VPCs.
+# # SPG and steering GNFP rules live in 6-policy stage.
+# - name:
+#     explicit: adt-lab-izti-inspect
+#   description: "ADT-Lab NSI endpoint group — Intrazone traffic inspection (Palo NIC3)"
+#   project_id: rteller-demo-svc-e265-aaac
+#   type: INTERCEPT
+#   deployment_group:
+#     explicit: adt-lab-izti-fleet
+#   networks:
+#     - explicit: wan1-vpc1
+#     - explicit: wan2-vpc1
+#     - explicit: lan-transit-vpc1
+#     - explicit: lan-workload-vpc1
+#     - explicit: lan-mgmt-vpc
+#   labels:
+#     env: lab
+#     team: adt

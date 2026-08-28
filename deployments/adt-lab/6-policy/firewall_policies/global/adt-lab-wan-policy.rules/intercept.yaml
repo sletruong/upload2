@@ -1,0 +1,35 @@
+# STEERING RULES — east-west Cisco router traffic inspection.
+#
+# Both rules are SAME-STATE references into 6-policy/security_profile_groups/
+# (spg-adt-lab-ewti). The {explicit:} name carries a graph edge: rules are
+# created AFTER the SPG and destroyed BEFORE it — the §4c wedge cannot occur.
+#
+# ⚠ LOGGING IS THE ONLY WAY TO SEE A MATCH. There is no GCP metric for NSI
+# interception; without logging the rule's effect is invisible in the console.
+
+2000:
+  description: "steer RFC1918 ingress on WAN VPCs to east-west inspection (Palo NIC1)"
+  direction: INGRESS
+  action: apply_security_profile_group
+  security_profile_group:
+    explicit: spg-adt-lab-ewti
+  source_ranges:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+  layer4:
+    - { protocol: all }
+  enabled: true
+  logging: true
+
+2100:
+  description: "steer all egress on WAN VPCs to east-west inspection (Palo NIC1)"
+  direction: EGRESS
+  action: apply_security_profile_group
+  security_profile_group:
+    explicit: spg-adt-lab-ewti
+  destination_ranges: [0.0.0.0/0]
+  layer4:
+    - { protocol: all }
+  enabled: true
+  logging: true

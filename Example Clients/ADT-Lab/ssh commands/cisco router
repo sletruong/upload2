@@ -1,0 +1,609 @@
+
+  Here's a summary of every change made to both files:
+
+  ┌─────────────────────────────────┬─────────────────────┬─────────────────────────┐
+  │              Field              │       Before        │          After          │
+  ├─────────────────────────────────┼─────────────────────┼─────────────────────────┤
+  │ VRF route-distinguishers (usc1) │ 65001:1/2/3         │ 65100:1/2/3                 │
+  ├─────────────────────────────────┼─────────────────────┼─────────────────────────────┤
+  │ VRF route-distinguishers (use4) │ 65002:1/2/3         │ 65100:1/2/3                 │
+  ├─────────────────────────────────┼─────────────────────┼─────────────────────────────┤
+  │ Cisco BGP ASN (usc1)            │ router bgp 65001    │ router bgp 65100            │
+  ├─────────────────────────────────┼─────────────────────┼─────────────────────────────┤
+  │ Cisco BGP ASN (use4)            │ router bgp 65002    │ router bgp 65100            │
+  ├─────────────────────────────────┼─────────────────────┼─────────────────────────────┤
+  │ WAN1 neighbors (usc1)           │ <CR_WAN1_IP_1/2>    │ 10.0.1.3 / 10.0.1.4         │
+  ├─────────────────────────────────┼─────────────────────┼─────────────────────────────┤
+  │ WAN2 neighbors (usc1)           │ <CR_WAN2_IP_1/2>    │ 10.0.11.3 / 10.0.11.4       │
+  ├─────────────────────────────────┼─────────────────────┼─────────────────────────────┤
+  │ LAN-TRANSIT neighbors (usc1)    │ <CR_TRANSIT_IP_1/2> │ 172.16.1.3 / 172.16.1.4     │
+  ├─────────────────────────────────┼─────────────────────┼─────────────────────────────┤
+  │ WAN1 neighbors (use4)           │ <CR_WAN1_IP_1/2>    │ 10.0.101.3 / 10.0.101.4     │
+  ├─────────────────────────────────┼─────────────────────┼─────────────────────────────┤
+  │ WAN2 neighbors (use4)           │ <CR_WAN2_IP_1/2>    │ 10.0.111.3 / 10.0.111.4     │
+  ├─────────────────────────────────┼─────────────────────┼─────────────────────────────┤
+  │ LAN-TRANSIT neighbors (use4)    │ <CR_TRANSIT_IP_1/2> │ 172.16.101.3 / 172.16.101.4 │
+  └─────────────────────────────────┴─────────────────────┴─────────────────────────────┘
+
+  The remote-as values for each Cloud Router were already correct in the original files and match the tfvars ASNs. Interface numbering (Gi1–Gi4 → NIC 0–3) was also already correct.
+
+ssh-keygen -t rsa -f /Users/gaurav.maheshwari/.ssh/adt-lab-cisco -C gaurav.maheshwari
+
+gcloud compute ssh admin@adt-lab-cisco-usc1-a \
+  --zone "us-central1-a" \
+  --project "rteller-demo-svc-e265-aaac" \
+  --tunnel-through-iap \
+  --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"
+
+gcloud compute ssh admin@adt-lab-cisco-usc1-b \
+  --zone "us-central1-b" \
+  --project "rteller-demo-svc-e265-aaac" \
+  --tunnel-through-iap \
+  --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"
+
+gcloud compute ssh admin@adt-lab-cisco-use4-a \
+  --zone "us-east4-a" \
+  --project "rteller-demo-svc-e265-aaac" \
+  --tunnel-through-iap \
+  --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"
+
+gcloud compute ssh admin@adt-lab-cisco-use4-b \
+  --zone "us-east4-b" \
+  --project "rteller-demo-svc-e265-aaac" \
+  --tunnel-through-iap \
+  --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"
+
+
+gcloud compute ssh --zone "us-central1-a" "admin@adt-lab-cisco-usc1-a" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac" --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"
+
+  gcloud compute ssh --zone "us-central1-a" "test-vm-wan1-usc1" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac" --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"
+
+  gcloud compute instances get-serial-port-output adt-lab-cisco-usc1 --zone=us-central1-a
+
+
+
+  main.tf
+  - Removed metadata_startup_script entirely — having both startup-script and ssh-keys silently kills key binding (Cisco takes the customer-config path and ignores ssh-keys)
+  - Kept only ssh-keys in metadata (Recipe A — auto path: Gi1 DHCP, SSH up, keys bound)
+  - Added trimspace() around the public key file read (removes trailing newlines)
+  - Removed cisco_password variable (not needed for Recipe A)
+  - Updated cisco_ssh_key_path description to reference ED25519
+
+  terraform.tfvars
+  - Fixed cisco_username to admin
+  - Fixed cisco_ssh_key_path — removed .pub suffix (the code appends .pub itself; had .pub.pub bug)
+
+  .env
+  - Updated key generation command to ED25519
+  - Added IAP connect command and serial console verification commands
+  - Removed password variable (not needed until Recipe B)
+
+  # Bootstrapping a Cisco Catalyst 8000V on GCP — SSH key auth that works on first boot
+
+Standalone recipe. No dependency on any framework — plain Terraform you can
+paste into a greenfield project.
+
+Verified end to end on `cisco-c8k-17-16-01a-byol`: first boot, pubkey-only,
+`BatchMode=yes` (so a silent password fallback can't fake a pass).
+
+---
+
+## The one thing to understand first
+
+The c8000v has **no Google guest agent**. Cisco's own day-0 agent reads
+instance metadata, and it has **two mutually exclusive paths**:
+
+| Metadata you set | Agent path | What you get |
+|---|---|---|
+| `ssh-keys` only | **auto** | Agent writes its own minimal config: **Gi1 up on DHCP, SSH enabled**, and binds every `user:key` entry you supplied |
+| **any** `startup-script` | **customer-config** | Agent applies *your* config via CVAC — and **silently stops binding `ssh-keys`** |
+
+⚠ **This is the trap.** Adding a startup script — even a trivial one — turns
+off the `ssh-keys` mechanism with no error anywhere. The box boots healthy,
+the metadata is present and correct, and your key is simply never installed.
+
+So pick a recipe based on whether you need boot-time config, and never mix.
+
+---
+
+## Recipe A — metadata only (simplest; use this if you can)
+
+Best for a **single-NIC** box, or any box you'll configure over SSH after it
+boots.
+
+```hcl
+resource "google_compute_instance" "c8k" {
+  name         = "c8k-1"
+  machine_type = "n2-standard-4"
+  zone         = "us-east4-a"
+
+  boot_disk {
+    initialize_params {
+      image = "projects/cisco-public/global/images/cisco-c8k-17-16-01a-byol"
+    }
+  }
+
+  network_interface {
+    subnetwork = google_compute_subnetwork.lab.id
+  }
+
+  # ⚠ THE ONLY METADATA KEY. Adding startup-script here breaks key binding.
+  # Standard GCE format: newline-separated user:key entries.
+  metadata = {
+    ssh-keys = "edadmin:${trimspace(file("~/.ssh/c8k_ed25519.pub"))}"
+  }
+}
+
+# IAP ingress — 35.235.240.0/20 is Google's IAP forwarding range.
+resource "google_compute_firewall" "iap" {
+  name          = "fw-c8k-iap"
+  network       = google_compute_network.lab.id
+  source_ranges = ["35.235.240.0/20"]
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+}
+```
+
+Connect — **stock gcloud, no flags**:
+
+```bash
+gcloud compute ssh edadmin@c8k-1 --zone=us-east4-a --tunnel-through-iap \
+  --ssh-key-file=~/.ssh/c8k_ed25519
+```
+
+---
+
+## Recipe B — startup-script (when you need boot-time config)
+
+The moment you need *any* day-0 config — bringing up data NICs, for example —
+you're on the customer-config path, so the key bindings must move **inside**
+the config.
+
+```hcl
+locals {
+  # ⚠ MD5 FINGERPRINT, NOT THE KEY. Compute it offline:
+  #     ssh-keygen -l -E md5 -f ~/.ssh/c8k_ed25519.pub
+  # Take the hex after "MD5:" and STRIP THE COLONS.
+  ed_md5 = "2497e2d8d319abf009251061df66f9d1"
+
+  day0 = <<-IOS
+    Section: IOS configuration
+    hostname c8k-1
+    interface GigabitEthernet1
+     ip address dhcp
+     no shutdown
+    interface GigabitEthernet2
+     ip address 10.10.0.11 255.255.255.0
+     no shutdown
+    username edadmin privilege 15
+    ip ssh pubkey-chain
+    username edadmin
+    key-hash ssh-ed25519 ${local.ed_md5}
+    exit
+    exit
+  IOS
+}
+
+resource "google_compute_instance" "c8k" {
+  # ... as above ...
+
+  # ⚠ NO ssh-keys KEY HERE — it would be ignored on this path. The binding
+  # is the key-hash line inside day0.
+  metadata = {
+    startup-script = local.day0
+  }
+}
+```
+
+Three things that will bite you in Recipe B:
+
+- **`Section: IOS configuration` is a required envelope.** Without that exact
+  first line the agent doesn't recognise the payload as bootstrap config and
+  silently ignores it.
+- **`key-hash`, never `key-string`.** Pasting the full public key into
+  `pubkey-chain` fails under CVAC. Only the MD5-fingerprint one-liner works.
+- **It is `startup-script`, not `user-data`.** Same metadata transport, but
+  nothing is *executed* — there's no shell. Cisco's agent just reads the
+  string. (`user-data` is the cloud-init convention and is wrong here.)
+
+---
+
+## Use ED25519, not RSA
+
+RSA works, but IOS-XE only signs RSA with SHA-1 (`ssh-rsa`), which modern
+OpenSSH disables by default. You'll see `no mutual signature algorithm` and
+need:
+
+```bash
+gcloud compute ssh admin@c8k-1 ... -- \
+  -o PubkeyAcceptedAlgorithms=+ssh-rsa -o HostKeyAlgorithms=+ssh-rsa
+```
+
+ED25519 is offered natively by the server and needs no flags. Generate with:
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/c8k_ed25519 -N ''
+ssh-keygen -l -E md5 -f ~/.ssh/c8k_ed25519.pub   # for Recipe B's key-hash
+```
+
+---
+
+## ⚠ Multi-NIC boxes: what the auto path does NOT do
+
+Recipe A's auto path brings up **Gi1 only**. On a multi-NIC c8000v the data
+interfaces boot **administratively down**, so:
+
+- The box is **reachable** (Gi1 + IAP) — you can log in and raise them.
+- But it forwards nothing until you do.
+
+That's the real choice: Recipe A gives you a reachable box you finish by
+hand; Recipe B gives you a fully configured box at the cost of moving key
+management into the config. There is no option that does both automatically.
+
+---
+
+## Verifying it actually worked
+
+Test in strict terms — `BatchMode=yes` prevents a password prompt from
+masking a failed key:
+
+```bash
+gcloud compute ssh edadmin@c8k-1 --zone=us-east4-a --tunnel-through-iap \
+  --ssh-key-file=~/.ssh/c8k_ed25519 -- -o BatchMode=yes 'show ip int brief'
+```
+
+If it fails, read the serial console before changing anything — it tells you
+which agent path ran:
+
+```bash
+gcloud compute instances get-serial-port-output c8k-1 --zone=us-east4-a
+```
+
+- `Customer bootstrap cfg provided in custom-data format!` → customer-config
+  path (Recipe B). `ssh-keys` is being ignored.
+- `No supported customer bootstrap...` → auto path (Recipe A). Keys bound.
+
+---
+
+## Why this was hard to diagnose
+
+Five problems stacked, each masking the next:
+
+1. Multi-NIC box with no day-0 → **every interface admin-down**. Keys were
+   bound correctly; there was no L3 path to authenticate over. The mechanism
+   looked broken and was innocent.
+2. Once reachable, RSA/SHA-1 rejection looked like "key rejected" but was
+   entirely client-side.
+3. One boot with a startup-script happened to take the **auto** path anyway
+   (serial: "No supported customer bootstrap"), so both mechanisms appeared
+   to work together. They don't — that was a race.
+4. Later boots took the customer path, key binding stopped, and the failure
+   looked intermittent.
+5. `key-string` in `pubkey-chain` fails under CVAC where it works
+   interactively.
+
+If you're debugging this: **check the serial console for the agent path
+first.** It converts a guessing game into a two-case decision.
+
+
+adt-lab-cisco-use4
+
+
+Three new firewall rules added — one per VPC where BGP peering occurs:
+
+  ┌──────────────────┬────────────────────────────┬────────────────────────────────┬─────────┐
+  │       VPC        │         Rule name          │         Source ranges          │  Port   │
+  ├──────────────────┼────────────────────────────┼────────────────────────────────┼─────────┤
+  │ wan1-vpc1        │ wan1-vpc1-allow-bgp        │ 10.0.1.0/24, 10.0.101.0/24     │ TCP 179 │
+  ├──────────────────┼────────────────────────────┼────────────────────────────────┼─────────┤
+  │ wan2-vpc1        │ wan2-vpc1-allow-bgp        │ 10.0.11.0/24, 10.0.111.0/24    │ TCP 179 │
+  ├──────────────────┼────────────────────────────┼────────────────────────────────┼─────────┤
+  │ lan-transit-vpc1 │ lan-transit-vpc1-allow-bgp │ 172.16.1.0/24, 172.16.101.0/24 │ TCP 179 │
+
+
+
+
+  On adt-lab-cisco-usc1:
+  show ip interface brief
+  Expected: Gi1=192.168.21.2, Gi2=10.0.1.2, Gi3=10.0.11.2, Gi4=172.16.1.2, all UP/UP
+
+  Step 2 — Test reachability from within each VRF to the Cloud Router NCC IPs
+
+  ping vrf WAN1 10.0.1.3
+  ping vrf WAN2 10.0.11.3
+  ping vrf LAN-TRANSIT 172.16.1.3
+
+  If any of these fail, the Cisco can't reach the Cloud Router at all — BGP has no chance.
+
+  Step 3 — Check BGP is running and neighbour state
+
+  show bgp vrf WAN1 summary
+  show bgp vrf WAN2 summary
+  show bgp vrf LAN-TRANSIT summary
+
+  Step 4 — Check what the BGP process actually has configured
+
+  show running-config | section router bgp
+  show running-config | section interface Gigabit
+
+  Paste the output here and I can diagnose exactly what's wrong. The three most likely causes given state: Connect with matching IPs are:
+
+  ┌───────────────────────────────────────────────────┬────────────────────────────────────────────────┐
+  │                       Cause                       │               Symptom you'll see               │
+  ├───────────────────────────────────────────────────┼────────────────────────────────────────────────┤
+  │ VRF not assigned to interface                     │ ping vrf WAN1 10.0.1.3 fails — no route in VRF │
+  ├───────────────────────────────────────────────────┼────────────────────────────────────────────────┤
+  │ Interface IP removed when VRF was applied         │ show ip int brief shows no IP on Gi2/3/4       │
+  ├───────────────────────────────────────────────────┼────────────────────────────────────────────────┤
+  │ BGP neighbor not under correct VRF address-family │ show bgp vrf WAN1 summary shows no neighbours  │
+  └───────────────────────────────────────────────────┴────────────────────────────────────────────────┘
+===========
+
+  configure terminal
+  interface GigabitEthernet2
+   vrf forwarding WAN1
+   ip address 10.0.1.2 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet3
+   vrf forwarding WAN2
+   ip address 10.0.11.2 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet4
+   vrf forwarding LAN-TRANSIT
+   ip address 172.16.1.2 255.255.255.0
+   no shutdown
+  exit
+  end
+  write memory
+
+  Paste this on adt-lab-cisco-use4:
+
+  configure terminal
+  interface GigabitEthernet2
+   vrf forwarding WAN1
+   ip address 10.0.101.2 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet3
+   vrf forwarding WAN2
+   ip address 10.0.111.2 255.255.255.0
+   no shutdown
+  exit
+  interface GigabitEthernet4
+   vrf forwarding LAN-TRANSIT
+   ip address 172.16.101.2 255.255.255.0
+   no shutdown
+  exit
+  end
+  write memory
+
+  Then verify on each router:
+
+  ping vrf WAN1 10.0.1.3
+  ping vrf WAN2 10.0.11.3
+  ping vrf LAN-TRANSIT 172.16.1.3
+
+  Once the pings succeed, BGP should come up within ~30 seconds. Confirm with:
+
+  show bgp vrf WAN1 summary
+  show bgp vrf WAN2 summary
+  show bgp vrf LAN-TRANSIT summary
+
+  Look for the neighbour state changing from Idle/Active to Established and numLearnedRoutes > 0 on the GCP Cloud Router side.
+
+
+
+
+  Check BGP status for all VRFs at once:
+  show ip bgp vpnv4 all summary
+
+  Or per-VRF:
+  show ip bgp vpnv4 vrf WAN1 summary
+  show ip bgp vpnv4 vrf WAN2 summary
+  show ip bgp vpnv4 vrf LAN-TRANSIT summary
+
+  Check interface IPs to confirm the fix worked:
+  show ip interface brief
+
+  Check VRF routing tables (confirms interface IP is in the VRF):
+  show ip route vrf WAN1
+  show ip route vrf WAN2
+  show ip route vrf LAN-TRANSIT
+
+  Run show ip bgp vpnv4 all summary first — it shows all neighbours across all VRFs in one output and will tell you if BGP is Established or stuck in Idle/Active.
+
+
+============
+
+adt-lab-cisco-usc1#show ip bgp vpnv4 all summary
+BGP router identifier 192.168.21.2, local AS number 65100
+BGP table version is 11, main routing table version 11
+10 network entries using 2640 bytes of memory
+20 path entries using 2720 bytes of memory
+6/6 BGP path/bestpath attribute entries using 1872 bytes of memory
+3 BGP AS-PATH entries using 72 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 7304 total bytes of memory
+BGP activity 10/0 prefixes, 20/0 paths, scan interval 60 secs
+10 networks peaked at 18:05:00 Aug 11 2026 UTC (00:02:43.922 ago)
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.0.1.3        4        65035      12      14       11    0    0 00:02:52        4
+10.0.1.4        4        65035      12      13       11    0    0 00:02:55        4
+10.0.11.3       4        65037      12      13       11    0    0 00:02:42        4
+10.0.11.4       4        65037      12      13       11    0    0 00:02:45        4
+172.16.1.3      4        65033      12      13       11    0    0 00:02:41        2
+172.16.1.4      4        65033      12      12       11    0    0 00:02:43        2
+adt-lab-cisco-usc1#  show ip bgp vpnv4 vrf WAN1 summary
+BGP router identifier 10.0.1.2, local AS number 65100
+BGP table version is 11, main routing table version 11
+4 network entries using 1056 bytes of memory
+8 path entries using 1088 bytes of memory
+6/6 BGP path/bestpath attribute entries using 1872 bytes of memory
+3 BGP AS-PATH entries using 72 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 4088 total bytes of memory
+BGP activity 10/0 prefixes, 20/0 paths, scan interval 60 secs
+10 networks peaked at 18:05:00 Aug 11 2026 UTC (00:02:55.275 ago)
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.0.1.3        4        65035      13      14       11    0    0 00:03:04        4
+10.0.1.4        4        65035      13      13       11    0    0 00:03:06        4
+adt-lab-cisco-usc1#  show ip bgp vpnv4 vrf WAN2 summary
+BGP router identifier 10.0.11.2, local AS number 65100
+BGP table version is 11, main routing table version 11
+4 network entries using 1056 bytes of memory
+8 path entries using 1088 bytes of memory
+6/6 BGP path/bestpath attribute entries using 1872 bytes of memory
+3 BGP AS-PATH entries using 72 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 4088 total bytes of memory
+BGP activity 10/0 prefixes, 20/0 paths, scan interval 60 secs
+10 networks peaked at 18:05:00 Aug 11 2026 UTC (00:02:55.314 ago)
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.0.11.3       4        65037      12      14       11    0    0 00:02:54        4
+10.0.11.4       4        65037      12      13       11    0    0 00:02:57        4
+adt-lab-cisco-usc1#  show ip bgp vpnv4 vrf LAN-TRANSIT summary
+BGP router identifier 172.16.1.2, local AS number 65100
+BGP table version is 11, main routing table version 11
+2 network entries using 528 bytes of memory
+4 path entries using 544 bytes of memory
+6/6 BGP path/bestpath attribute entries using 1872 bytes of memory
+3 BGP AS-PATH entries using 72 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 3016 total bytes of memory
+BGP activity 10/0 prefixes, 20/0 paths, scan interval 60 secs
+10 networks peaked at 18:05:00 Aug 11 2026 UTC (00:02:57.018 ago)
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+172.16.1.3      4        65033      12      13       11    0    0 00:02:54        2
+172.16.1.4      4        65033      12      13       11    0    0 00:02:56        2
+adt-lab-cisco-usc1#  show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       192.168.21.2    YES DHCP   up                    up      
+GigabitEthernet2       10.0.1.2        YES manual up                    up      
+GigabitEthernet3       10.0.11.2       YES manual up                    up      
+GigabitEthernet4       172.16.1.2      YES manual up                    up      
+VirtualPortGroup0      192.168.35.101  YES TFTP   up                    up      
+adt-lab-cisco-usc1#  show ip route vrf WAN1
+
+Routing Table: WAN1
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, m - OMP
+       n - NAT, Ni - NAT inside, No - NAT outside, Nd - NAT DIA
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       H - NHRP, G - NHRP registered, g - NHRP registration summary
+       o - ODR, P - periodic downloaded static route, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+       & - replicated local route overrides by connected
+
+Gateway of last resort is not set
+
+      10.0.0.0/8 is variably subnetted, 5 subnets, 2 masks
+C        10.0.1.0/24 is directly connected, GigabitEthernet2
+L        10.0.1.2/32 is directly connected, GigabitEthernet2
+B        10.0.2.0/24 [20/100] via 10.0.1.1, 00:03:34
+B        10.0.101.0/24 [20/324] via 10.0.1.1, 00:03:34
+B        10.0.102.0/24 [20/324] via 10.0.1.1, 00:03:34
+adt-lab-cisco-usc1#  show ip route vrf WAN2
+
+Routing Table: WAN2
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, m - OMP
+       n - NAT, Ni - NAT inside, No - NAT outside, Nd - NAT DIA
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       H - NHRP, G - NHRP registered, g - NHRP registration summary
+       o - ODR, P - periodic downloaded static route, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+       & - replicated local route overrides by connected
+
+Gateway of last resort is not set
+
+      10.0.0.0/8 is variably subnetted, 5 subnets, 2 masks
+C        10.0.11.0/24 is directly connected, GigabitEthernet3
+L        10.0.11.2/32 is directly connected, GigabitEthernet3
+B        10.0.12.0/24 [20/100] via 10.0.11.1, 00:03:25
+B        10.0.111.0/24 [20/324] via 10.0.11.1, 00:03:25
+B        10.0.112.0/24 [20/324] via 10.0.11.1, 00:03:25
+adt-lab-cisco-usc1#  show ip route vrf LAN-TRANSIT
+
+Routing Table: LAN-TRANSIT
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, m - OMP
+       n - NAT, Ni - NAT inside, No - NAT outside, Nd - NAT DIA
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       H - NHRP, G - NHRP registered, g - NHRP registration summary
+       o - ODR, P - periodic downloaded static route, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+       & - replicated local route overrides by connected
+
+Gateway of last resort is not set
+
+      172.16.0.0/16 is variably subnetted, 3 subnets, 2 masks
+C        172.16.1.0/24 is directly connected, GigabitEthernet4
+L        172.16.1.2/32 is directly connected, GigabitEthernet4
+B        172.16.101.0/24 [20/324] via 172.16.1.1, 00:03:24
+adt-lab-cisco-usc1#show ip bgp vpnv4 all summary first 
+                                                 ^
+% Invalid input detected at '^' marker.
+
+adt-lab-cisco-usc1#show ip bgp vpnv4 all summary       
+BGP router identifier 192.168.21.2, local AS number 65100
+BGP table version is 11, main routing table version 11
+10 network entries using 2640 bytes of memory
+20 path entries using 2720 bytes of memory
+6/6 BGP path/bestpath attribute entries using 1872 bytes of memory
+3 BGP AS-PATH entries using 72 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 7304 total bytes of memory
+BGP activity 10/0 prefixes, 20/0 paths, scan interval 60 secs
+10 networks peaked at 18:05:00 Aug 11 2026 UTC (00:04:13.881 ago)
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.0.1.3        4        65035      17      19       11    0    0 00:04:22        4
+10.0.1.4        4        65035      17      17       11    0    0 00:04:25        4
+10.0.11.3       4        65037      16      18       11    0    0 00:04:12        4
+10.0.11.4       4        65037      16      17       11    0    0 00:04:15        4
+172.16.1.3      4        65033      16      18       11    0    0 00:04:11        2
+172.16.1.4      4        65033      16      17       11    0    0 00:04:13        2
+
+
+
+
+conf t
+int gig 1
+ip address dhcp
+no shut
+int gig 2
+ip address dhcp
+no shut
+int gig 3
+ip address dhcp
+no shut
+int gig 4
+ip address dhcp
+no shut
+end
+write mem

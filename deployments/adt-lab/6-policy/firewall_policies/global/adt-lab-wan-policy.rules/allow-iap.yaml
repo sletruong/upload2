@@ -1,0 +1,8 @@
+# IAP admin path on the WAN policy. Priority 1000 sits above the steering
+# rules (2000/2100) so admin SSH survives a broken or unreachable Palo fleet.
+1000:
+  action: allow
+  direction: INGRESS
+  source_ranges: [35.235.240.0/20]
+  layer4: [{ protocol: tcp, ports: ["22"] }]
+  description: "allow SSH over IAP on WAN VPCs"

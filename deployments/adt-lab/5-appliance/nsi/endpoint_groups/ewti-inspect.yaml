@@ -1,0 +1,24 @@
+# NSI CONSUMER endpoint group — binds the deployment group to consumer VPCs.
+# Every network listed here has its traffic intercepted and sent to the Palo
+# Alto fleet via GENEVE on UDP/6081.
+# Consumer VPCs: wan1, wan2, lan-transit, lan-workload-vpc1, lan-mgmt-vpc.
+# lan-workload-vpc2 is excluded (no threat profile, cost decision for lab).
+#
+# The security profile group (SPG) and steering firewall policy are managed
+# separately in the 6-policy stage. Apply 5-appliance before 6-policy.
+- name:
+    explicit: ewti-inspect
+  description: "ADT-Lab NSI endpoint group — consumer VPCs for Palo Alto inspection"
+  project_id: rteller-demo-svc-e265-aaac
+  type: INTERCEPT
+  deployment_group:
+    explicit: adt-lab-ewti-fleet
+  networks:
+    - explicit: wan1-vpc1
+    - explicit: wan2-vpc1
+    - explicit: lan-transit-vpc1
+    - explicit: lan-workload-vpc1
+    - explicit: lan-mgmt-vpc
+  labels:
+    env: lab
+    team: adt

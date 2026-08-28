@@ -1,0 +1,11 @@
+# Cisco C8000v fleet SSH key — references the secret uploaded by keys_upload.tf.
+# mode: reference = framework reads the existing secret; it does NOT create or
+# own it. Secret format: {"private": "...", "public": "..."}.
+# The `admin:` prefix is added automatically by the stack (vendor: cisco → admin).
+- name:
+    explicit: adt-lab-cisco-ssh-key
+  description: "ADT-Lab Cisco C8000v day-0 SSH key (ed25519)"
+  project_id: rteller-demo-svc-e265-aaac
+  mode: reference
+  storage: secret_manager
+  path: adt-lab-cisco-ssh-key

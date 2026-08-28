@@ -1,0 +1,261 @@
+
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+(admin@compute.6310389597559253926) Password: 
+
+
+
+adt-lab-cisco-usc1#sh run
+Building configuration...
+
+Current configuration : 6506 bytes
+!
+! Last configuration change at 17:02:34 UTC Tue Aug 11 2026
+!
+version 17.14
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+platform qfp utilization monitor load 80
+platform sslvpn use-pd
+platform console serial
+!
+hostname adt-lab-cisco-usc1
+!
+boot-start-marker
+boot-end-marker
+!
+!         
+vrf definition GS
+ rd 100:100
+ !
+ address-family ipv4
+ exit-address-family
+!
+logging persistent size 1000000 filesize 8192 immediate
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authorization exec default local none 
+!
+!
+aaa session-id common
+!
+!
+!         
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+login on-success log
+!
+!
+subscriber templating
+!
+!         
+!
+crypto pki trustpoint TP-self-signed-753371995
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-753371995
+ revocation-check none
+ rsakeypair TP-self-signed-753371995
+ hash sha256
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment pkcs12
+ revocation-check crl
+ hash sha256
+!
+!
+crypto pki certificate chain TP-self-signed-753371995
+ certificate self-signed 01
+  3082032E 30820216 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  30312E30 2C060355 04030C25 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 37353333 37313939 35301E17 0D323630 38313131 37303235 
+  305A170D 33363038 31303137 30323530 5A303031 2E302C06 03550403 0C25494F 
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3735 33333731 
+  39393530 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 82010A02 
+  82010100 B082879E 0FDB45C1 908F8E27 D6C9B234 0D11960C 567EDC72 F77F8FB2 
+  C7C30692 4E2580B4 29A670A9 8BDB4D77 B09A5C43 BA2774C2 E0C792E2 38EDC8DD 
+  E9718ED5 8AC1804A 8FC77FA1 6F1E9AD2 B33F5B46 3113E02E 10C906F1 CE3D4B5B 
+  82C5246C 4BA609C6 DDF1E3EB D77D8619 D24CF1B5 0CE19527 9C4AAD49 AD6461A0 
+  DDA7234B D67628B0 67BBC207 869200F8 E1EAB802 8E1FFA53 389CAFCD F2A31694 
+  9854C466 5E8D2C53 E65B8A6F 3ED09A6D 6B01F72E D4DC9502 2F105010 BB96C07E 
+  D1D024AD 1F9BB23F A4086626 108FFE4F 26859AAB 8AE9A193 9427B70D 78BF37CE 
+  217E9CA1 4C21A602 3BC0AC05 03A83D73 B8285B86 21288BD1 CEFA41C8 832E9677 
+  E3DAFDF3 02030100 01A35330 51301D06 03551D0E 04160414 469C9370 F4EDB6ED 
+  EDE07B2A 2B22E286 162E4A86 301F0603 551D2304 18301680 14469C93 70F4EDB6 
+  EDEDE07B 2A2B22E2 86162E4A 86300F06 03551D13 0101FF04 05300301 01FF300D 
+  06092A86 4886F70D 01010B05 00038201 01002929 57255421 FD3681F0 BD9EF21C 
+  27616580 725BFB23 FDDA7059 290A112D B229F721 B303E576 005CB9D2 E70C5C87 
+  A6A28FDA 9BF89204 FB3F4B8B 23E911CF 81F3E026 4D6169DA 13C94C84 41B2D9AB 
+  8CC9B419 7CDB0A6B 3F9EA815 C335F0EE 1CDDC19F 6DEAABE7 295825F8 C196F58C 
+  BD991222 21534B49 28CE2D1E CBE2D102 2C989044 2A3A3D47 B99F73F0 399310C4 
+  89531551 0459D224 CF9E1BF0 A7101072 DBB09F84 6C2BB46B 6C4F1BC5 C47D8882 
+  8586F6A1 491F070D 02CEF8C9 03CE36F7 4BDDF0E7 67F44903 643FC1FB 01C51422 
+  DC16051B FFA1923B 3BB8ADE2 8CF9CF67 D60EBFCF 7BE31189 91BF72E2 4DE94C1E 
+  FF834786 16293FA2 EE82B1C6 973C1A39 94DC
+        quit
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B 
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+        quit
+!
+!
+license udi pid C8000V sn 903STEXC20I
+memory free low-watermark processor 225109
+diagnostic bootup level minimal
+!
+!
+!
+!
+username admin privilege 15 password 7 013202095205265E731F1A
+!
+redundancy
+!
+!
+!
+!
+!
+!         
+!
+!
+!
+interface VirtualPortGroup0
+ vrf forwarding GS
+ ip address 192.168.35.101 255.255.255.0
+ ip nat inside
+!
+interface GigabitEthernet1
+ ip address dhcp
+ negotiation auto
+!
+interface GigabitEthernet2
+ ip address dhcp
+ negotiation auto
+!
+interface GigabitEthernet3
+ ip address dhcp
+ negotiation auto
+!
+interface GigabitEthernet4
+ ip address dhcp
+ negotiation auto
+!
+iox
+ip forward-protocol nd
+ip tcp window-size 8192
+!
+ip http server
+ip http secure-server
+ip route vrf GS 0.0.0.0 0.0.0.0 GigabitEthernet1 192.168.21.1 global
+ip nat inside source list GS_NAT_ACL interface GigabitEthernet1 vrf GS overload
+ip ssh bulk-mode 131072
+ip ssh rsa keypair-name ssh-key
+ip ssh server algorithm publickey ecdsa-sha2-nistp256 ecdsa-sha2-nistp384 ecdsa-sha2-nistp521 ssh-ed25519 ssh-rsa x509v3-ecdsa-sha2-nistp256 x509v3-ecdsa-sha2-nistp384 x509v3-ecdsa-sha2-nistp521
+ip scp server enable
+!
+!
+ip access-list standard GS_NAT_ACL
+ 10 permit 192.168.35.0 0.0.0.255
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+line vty 0 4
+ transport input ssh
+line vty 5 20
+ transport input ssh
+!
+!
+!
+!
+!
+!
+!
+app-hosting appid guestshell
+ app-vnic gateway1 virtualportgroup 0 guest-interface 0
+  guest-ipaddress 192.168.35.102 netmask 255.255.255.0
+ app-default-gateway 192.168.35.101 guest-interface 0
+ name-server0 169.254.169.254
+ name-server1 8.8.8.8
+end
+
+adt-lab-cisco-usc1# sh ip int brief
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       192.168.21.2    YES DHCP   up                    up      
+GigabitEthernet2       10.0.1.2        YES DHCP   up                    up      
+GigabitEthernet3       10.0.11.2       YES DHCP   up                    up      
+GigabitEthernet4       172.16.1.2      YES DHCP   up                    up      
+VirtualPortGroup0      192.168.35.101  YES TFTP   up                    up      
+adt-lab-cisco-usc1#sh ip route
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, m - OMP
+       n - NAT, Ni - NAT inside, No - NAT outside, Nd - NAT DIA
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       H - NHRP, G - NHRP registered, g - NHRP registration summary
+       o - ODR, P - periodic downloaded static route, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+       & - replicated local route overrides by connected
+
+Gateway of last resort is 192.168.21.1 to network 0.0.0.0
+
+S*    0.0.0.0/0 [254/0] via 192.168.21.1
+      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks
+C        10.0.1.0/24 is directly connected, GigabitEthernet2
+L        10.0.1.2/32 is directly connected, GigabitEthernet2
+C        10.0.11.0/24 is directly connected, GigabitEthernet3
+L        10.0.11.2/32 is directly connected, GigabitEthernet3
+      172.16.0.0/16 is variably subnetted, 2 subnets, 2 masks
+C        172.16.1.0/24 is directly connected, GigabitEthernet4
+L        172.16.1.2/32 is directly connected, GigabitEthernet4
+      192.168.21.0/24 is variably subnetted, 2 subnets, 2 masks
+C        192.168.21.0/24 is directly connected, GigabitEthernet1
+L        192.168.21.2/32 is directly connected, GigabitEthernet1

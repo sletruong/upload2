@@ -1,0 +1,9 @@
+# WAN2 NCC hub — MESH topology.
+# Members: Cisco C8000v RA spoke (WAN2 leg, NIC 2) + wan2-vpc1 VPC spoke.
+- name:
+    explicit: wan2-ncc-hub
+  topology: mesh
+  description: "WAN2 NCC hub - Cisco RA spoke + wan2 VPC spoke"
+  project_id: rteller-demo-svc-e265-aaac
+  auto_accept:
+    default: [rteller-demo-svc-e265-aaac]
