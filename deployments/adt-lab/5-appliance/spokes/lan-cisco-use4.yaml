@@ -1,0 +1,15 @@
+# NCC RA spoke — Cisco LAN leg in us-east4.
+- name:
+    explicit: lan-cisco-use4
+  type: router_appliance
+  description: "Cisco C8000v LAN RA spoke — us-east4"
+  hub:
+    explicit: lan-ncc-hub
+  group: default
+  include_import_ranges: ["ALL_IPV4_RANGES"]
+  cloud_router:
+    router:
+      explicit: cr-lan-transit-adt1-use4
+    interfaces:
+      - explicit: int-lan-transit-adt1-use4-0
+      - explicit: int-lan-transit-adt1-use4-1

@@ -1,0 +1,14 @@
+# NSI PRODUCER deployment group — Palo Alto fleet in east-west-traffic-inspection.
+# All intercept deployments (one per zone per region) join this group.
+# The deployment group binds to the producer VPC; consumer VPCs are wired
+# via the endpoint group (see ../endpoint_groups/adt-lab-inspect.yaml).
+- name:
+    explicit: adt-lab-ewti-fleet
+  description: "ADT-Lab NSI intercept deployment group — Palo Alto VM-Series in east-west-traffic-inspection"
+  project_id: rteller-demo-svc-e265-aaac
+  network:
+    explicit: nsi-data-producer-01
+  labels:
+    env: lab
+    team: adt
+    appliance: palo

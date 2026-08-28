@@ -1,0 +1,116 @@
+gcloud compute ssh --zone "us-central1-a" \
+"admin@test-vm-lan-usc1" \
+--tunnel-through-iap \
+--project "rteller-demo-svc-e265-aaac" \
+  --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"
+
+gcloud compute ssh admin@test-vm-wan1-usc1 \
+  --zone "us-central1-b" \
+  --project "rteller-demo-svc-e265-aaac" \
+  --tunnel-through-iap \
+  --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"
+
+gcloud compute ssh admin@test-vm-wan2-usc1 \
+  --zone "us-east4-a" \
+  --project "rteller-demo-svc-e265-aaac" \
+  --tunnel-through-iap \
+  --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"
+
+gcloud compute ssh admin@adt-lab-cisco-use4-b \
+  --zone "us-east4-b" \
+  --project "rteller-demo-svc-e265-aaac" \
+  --tunnel-through-iap \
+  --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"
+
+
+
+  --------
+
+
+⏺ With OS Login enforced by org policy, SSH key management moves outside Terraform. Register your key once with:
+
+  gcloud compute os-login ssh-keys add \
+    --key "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDlG93cp0jL7GzqvFF+jtvuUEpz/OdjX80qFmeQf1pK8 admin" \
+    --project non-prod-gaurav-maheshwari
+
+  Then SSH via IAP using the private key:
+
+  gcloud compute ssh test-vm-lan-usc1\
+    --zone us-central1-a \
+    --tunnel-through-iap \
+    --project rteller-demo-svc-e265-aaac \
+    --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"
+
+  If you get the cross-org permission error (seen earlier with test-vm-lan-usc1), you'll also need these two IAM grants — one at org
+  level, one at project level:
+
+  # Org ID for non-prod-gaurav-maheshwari
+  gcloud organizations list
+
+  gcloud organizations add-iam-policy-binding 45694343690 \
+    --member="user:gaurav.maheshwari@insight.com" \
+    --role="roles/compute.osLoginExternalUser"
+
+  gcloud projects add-iam-policy-binding non-prod-gaurav-maheshwari \
+    --member="user:gaurav.maheshwari@insight.com" \
+    --role="roles/compute.osLogin"
+
+✻ Churned for 43s
+
+※ recap: Building ADT-Lab GCP network infrastructure with HA VPN, NSI/GENEVE Palo Alto firewalls, and test VMs in cluster VPCs. Next
+  action: run terraform apply to create the test instances with the org-policy-compliant config.
+
+❯ why am i getting this error                                                                                                       
+   gcloud compute ssh --zone "us-central1-a" "test-vm-wan1-usc1" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac"        
+  --ssh-key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco"                                                                      
+                                                                                                                                    
+  ERROR: (gcloud.compute.ssh) [gaurav.maheshwari@insight.com] does not have permission to access users instance                     
+  [gaurav.maheshwari@insight.com:importSshPublicKey] (or it may not exist): Insufficient IAM permissions. The instance belongs to   
+  an external organization.You must be granted the roles/compute.osLoginExternalUser IAM role on the external organization to       
+  configure POSIX account information. This command is authenticated as gaurav.maheshwari@insight.com which is the active account   
+  specified by the [core/account] property.                                                                                         
+  ⎿  ⧉ Selected 1 lines from cisco router in Visual Studio Code
+
+  Thought for 4s (ctrl+o to expand)
+
+⏺ Same root cause as before — your account (gaurav.maheshwari@insight.com) is from a different Google Cloud organization than the
+  one that owns rteller-demo-svc-e265-aaac. OS Login is enforced org-wide, and cross-org users need an extra role granted at the
+  organization level (not just the project).
+
+  Run these two commands:
+
+  # Step 1 — find the org ID for rteller-demo-svc-e265-aaac
+  gcloud projects get-ancestors rteller-demo-svc-e265-aaac
+
+  Look for the row with TYPE = organization — that's your ORG_ID.
+
+⏺ Same root cause as before — your account (gaurav.maheshwari@insight.com) is from a different Google Cloud organization than the
+  one that owns rteller-demo-svc-e265-aaac. OS Login is enforced org-wide, and cross-org users need an extra role granted at the
+  Thought for 4s (ctrl+o to expand)
+
+⏺ Same root cause as before — your account (gaurav.maheshwari@insight.com) is from a different Google Cloud organization than the
+  one that owns rteller-demo-svc-e265-aaac. OS Login is enforced org-wide, and cross-org users need an extra role granted at the
+  organization level (not just the project).
+
+  Run these two commands:
+
+  # Step 1 — find the org ID for rteller-demo-svc-e265-aaac
+  gcloud projects get-ancestors rteller-demo-svc-e265-aaac
+
+  Look for the row with TYPE = organization — that's your ORG_ID.
+
+  # Step 2 — grant cross-org OS Login at the org level (requires org admin)
+  gcloud organizations add-iam-policy-binding <ORG_ID> \
+    --member="user:gaurav.maheshwari@insight.com" \
+    --role="roles/compute.osLoginExternalUser"
+
+  # Step 3 — grant OS Login at the project level
+  gcloud projects add-iam-policy-binding rteller-demo-svc-e265-aaac \
+    --member="user:gaurav.maheshwari@insight.com" \
+    --role="roles/compute.osLogin"
+
+  After that, register your SSH key with OS Login for this project:
+
+  gcloud compute os-login ssh-keys add \
+    --key-file "/Users/gaurav.maheshwari/.ssh/adt-lab-cisco.pub" \
+    --project rteller-demo-svc-e265-aaac

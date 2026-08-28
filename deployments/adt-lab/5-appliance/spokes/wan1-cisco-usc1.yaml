@@ -1,0 +1,17 @@
+# # NCC RA spoke — Cisco WAN1 leg in us-central1.
+# # Both Cisco usc1-a and usc1-b join this spoke via NIC 1 (Gi2, wan1-vpc1).
+# # Cloud Router: cr-wan1-adt1-usc1, ASN 65035. Cisco BGP ASN: 65100.
+# - name:
+#     explicit: wan1-cisco-usc1
+#   type: router_appliance
+#   description: "Cisco C8000v WAN1 RA spoke — us-central1 (both zones join)"
+#   hub:
+#     explicit: wan1-ncc-hub
+#   group: default
+#   include_import_ranges: ["ALL_IPV4_RANGES"]
+#   cloud_router:
+#     router:
+#       explicit: cr-wan1-adt1-usc1
+#     interfaces:
+#       - explicit: int-wan1-adt1-usc1-0
+#       - explicit: int-wan1-adt1-usc1-1

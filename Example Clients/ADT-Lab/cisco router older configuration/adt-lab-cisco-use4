@@ -1,0 +1,24 @@
+Section: IOS configuration
+license smart enable
+username ${cisco_username} privilege 15 password ${cisco_password}
+ip domain-name cisco.com
+ip ssh version 2
+line vty 0 4
+login authentication default
+authorization exec default
+login local
+login authentication default
+authorization exec default
+transport input ssh
+int Gi2
+ip address dhcp
+no shut
+int Gi3
+ip address dhcp
+no shut
+int Gi1
+no ip nat outside
+int Gi4
+ip address dhcp
+no shut
+end

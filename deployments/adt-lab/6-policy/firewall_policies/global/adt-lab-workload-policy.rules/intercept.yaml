@@ -1,0 +1,101 @@
+# STEERING RULES — workload traffic inspection (two classes).
+#
+# PRIORITY ORDER (lower number = higher enforcement priority in GCP):
+#   1000      — IAP allow (allow-iap.yaml — admin path, survives fleet failure)
+#   2000/2100 — RFC1918 traffic → interzone inspection (ieti, Palo NIC4)
+#   3000/3100 — internet traffic → north-south inspection (nsti, Palo NIC2)
+#
+# NSTI SCOPE — secure tag + network context:
+#   target_secure_tags: only VMs tagged nsti-inspection/internet-egress have
+#     their internet traffic steered through north-south inspection.
+#   source/destination_network_context: INTERNET: the context filter scopes the
+#     rule to genuinely internet traffic only — 0.0.0.0/0 alone would include
+#     RFC1918 which belongs to the ieti rules above. The companion range
+#     (0.0.0.0/0) is REQUIRED by the API; the context is the real discriminator.
+#
+# ⚠ FILL IN tagValues/ID BEFORE APPLYING 6-policy:
+#   1. Apply 1-shared: cd deployments/adt-lab/1-shared && terraform apply
+#   2. Get the ID:    terraform output -json secure_tags
+#      Result: {"nsti-inspection/internet-egress": "tagValues/NNNNNNNNNN"}
+#   3. Replace the placeholder below with the real ID.
+#
+# All references are SAME-STATE {explicit:} into 6-policy/security_profile_groups/
+# — the create/destroy graph edge prevents the §4c wedge.
+#
+# ⚠ LOGGING IS THE ONLY WAY TO SEE A MATCH — no GCP metric exists for NSI
+# interception. Enable logging on every steering rule.
+
+# ── RFC1918 east-west traffic → interzone inspection (ieti, Palo NIC4) ──────
+
+2000:
+  description: "steer RFC1918 ingress in workload VPC to interzone inspection (Palo NIC4)"
+  direction: INGRESS
+  action: apply_security_profile_group
+  security_profile_group:
+    explicit: spg-adt-lab-ieti
+  source_ranges:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+  layer4:
+    - { protocol: all }
+  enabled: true
+  logging: true
+
+2100:
+  description: "steer RFC1918 egress from workload VPC to interzone inspection (Palo NIC4)"
+  direction: EGRESS
+  action: apply_security_profile_group
+  security_profile_group:
+    explicit: spg-adt-lab-ieti
+  destination_ranges:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+  layer4:
+    - { protocol: all }
+  enabled: true
+  logging: true
+
+# ── Internet traffic → north-south inspection (nsti, Palo NIC2) ──────────────
+#
+# source/destination_network_context: INTERNET restricts the 0.0.0.0/0 match
+# to genuinely internet-sourced/internet-bound traffic. Without the context,
+# 0.0.0.0/0 captures RFC1918 as well — the API requires BOTH fields together
+# (context alone is rejected; range alone catches internal traffic).
+#
+# target_secure_tags scopes each rule to VMs that carry the
+# nsti-inspection/internet-egress tag. Untagged VMs are not steered through
+# NSTI. Tag workload VMs at creation or via google_tags_tag_binding.
+
+3000:
+  description: "steer internet ingress to tagged workload VMs to north-south inspection (Palo NIC2)"
+  direction: INGRESS
+  action: apply_security_profile_group
+  security_profile_group:
+    explicit: spg-adt-lab-nsti
+  source_ranges: [0.0.0.0/0]
+  source_network_context: INTERNET
+  # ⚠ REPLACE with real tagValues/ID from: terraform output -json secure_tags (1-shared)
+  target_secure_tags:
+    - resolved: "tagValues/REPLACE_WITH_nsti-inspection/internet-egress_ID"
+  layer4:
+    - { protocol: all }
+  enabled: true
+  logging: true
+
+3100:
+  description: "steer internet egress from tagged workload VMs to north-south inspection (Palo NIC2)"
+  direction: EGRESS
+  action: apply_security_profile_group
+  security_profile_group:
+    explicit: spg-adt-lab-nsti
+  destination_ranges: [0.0.0.0/0]
+  destination_network_context: INTERNET
+  # ⚠ REPLACE with real tagValues/ID from: terraform output -json secure_tags (1-shared)
+  target_secure_tags:
+    - resolved: "tagValues/REPLACE_WITH_nsti-inspection/internet-egress_ID"
+  layer4:
+    - { protocol: all }
+  enabled: true
+  logging: true

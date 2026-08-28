@@ -1,0 +1,48 @@
+# Palo Alto VM-Series — us-east4, zone b. HA peer of palo-use4-a.
+- name:
+    explicit: adt-lab-palo-use4-b
+  description: "Palo Alto VM-Series bundle3 — us-east4-b, NSI GENEVE intercept"
+  project_id: rteller-demo-svc-e265-aaac
+  zone: us-east4-b
+  vendor: palo_alto
+  image:
+    resolved: projects/paloaltonetworksgcp-public/global/images/vmseries-flex-bundle3-1217
+  machine_type: c4-standard-8
+  min_cpu_platform: "Intel Emerald Rapids"
+  network_tags: [adt-lab-palo, allow-ssh]
+  bootstrap:
+    ssh_keys:
+      - explicit: adt-lab-palo-ssh-key
+    palo:
+      geneve_inspect: true
+      dhcp_client: true
+      dns_primary: 169.254.169.254
+  nics:
+    - subnetwork:
+        explicit: lan-mgmt-vpc-s1-use4
+      private_address: 192.168.121.11
+    - subnetwork:
+        explicit: ewti-s1-use4
+      private_address: 192.168.131.11
+    - subnetwork:
+        explicit: nsti-s1-use4
+      private_address: 192.168.141.11
+    - subnetwork:
+        explicit: izti-s1-use4
+      private_address: 192.168.151.11
+    - subnetwork:
+        explicit: ieti-s1-use4
+      private_address: 192.168.161.11
+  ilbs:
+    - join:
+        explicit: nsi-use4-b
+      nic: 1
+    - join:
+        explicit: nsi-nsti-use4-b
+      nic: 2
+    - join:
+        explicit: nsi-izti-use4-b
+      nic: 3
+    - join:
+        explicit: nsi-ieti-use4-b
+      nic: 4

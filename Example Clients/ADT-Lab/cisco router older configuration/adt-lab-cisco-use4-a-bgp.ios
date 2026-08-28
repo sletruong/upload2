@@ -1,0 +1,52 @@
+configure terminal
+!
+! ─── BGP Configuration: adt-lab-cisco-use4-a (us-east4-a) ──────────────────────
+! Cisco ASN : 65100
+! Router-ID : 172.16.101.4  (Gi4, lan-transit, unique per instance)
+!
+! Interface  | Cisco IP      | Cloud Router IPs           | CR ASN
+! Gi2 (WAN1) | 10.0.101.4    | 10.0.101.5 / 10.0.101.6   | 65036
+! Gi3 (WAN2) | 10.0.111.3    | 10.0.111.5 / 10.0.111.6   | 65038
+! Gi4 (LAN)  | 172.16.101.4  | 172.16.101.5 / 172.16.101.6 | 65034
+!
+
+router bgp 65100
+ bgp router-id 172.16.101.4
+ bgp log-neighbor-changes
+ !
+ ! WAN1 — Cloud Router ASN 65036, NCC interfaces 10.0.101.5 / 10.0.101.6
+ neighbor 10.0.101.5 remote-as 65036
+ neighbor 10.0.101.5 description CR-wan1-use4-nic0
+ neighbor 10.0.101.5 ebgp-multihop 2
+ neighbor 10.0.101.6 remote-as 65036
+ neighbor 10.0.101.6 description CR-wan1-use4-nic1
+ neighbor 10.0.101.6 ebgp-multihop 2
+ !
+ ! WAN2 — Cloud Router ASN 65038, NCC interfaces 10.0.111.5 / 10.0.111.6
+ neighbor 10.0.111.5 remote-as 65038
+ neighbor 10.0.111.5 description CR-wan2-use4-nic0
+ neighbor 10.0.111.5 ebgp-multihop 2
+ neighbor 10.0.111.6 remote-as 65038
+ neighbor 10.0.111.6 description CR-wan2-use4-nic1
+ neighbor 10.0.111.6 ebgp-multihop 2
+ !
+ ! LAN-TRANSIT — Cloud Router ASN 65034, NCC interfaces 172.16.101.5 / 172.16.101.6
+ neighbor 172.16.101.5 remote-as 65034
+ neighbor 172.16.101.5 description CR-lan-use4-nic0
+ neighbor 172.16.101.5 ebgp-multihop 2
+ neighbor 172.16.101.6 remote-as 65034
+ neighbor 172.16.101.6 description CR-lan-use4-nic1
+ neighbor 172.16.101.6 ebgp-multihop 2
+ !
+ address-family ipv4
+  neighbor 10.0.101.5 activate
+  neighbor 10.0.101.6 activate
+  neighbor 10.0.111.5 activate
+  neighbor 10.0.111.6 activate
+  neighbor 172.16.101.5 activate
+  neighbor 172.16.101.6 activate
+ exit-address-family
+exit
+!
+end
+write memory

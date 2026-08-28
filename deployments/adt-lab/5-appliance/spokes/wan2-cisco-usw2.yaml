@@ -1,0 +1,15 @@
+# # NCC RA spoke — Cisco WAN2 leg in us-west2.
+# - name:
+#     explicit: wan2-cisco-usw2
+#   type: router_appliance
+#   description: "Cisco C8000v WAN2 RA spoke — us-west2"
+#   hub:
+#     explicit: wan2-ncc-hub
+#   group: default
+#   include_import_ranges: ["ALL_IPV4_RANGES"]
+#   cloud_router:
+#     router:
+#       explicit: cr-wan2-adt1-usw2
+#     interfaces:
+#       - explicit: int-wan2-adt1-usw2-0
+#       - explicit: int-wan2-adt1-usw2-1

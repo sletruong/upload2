@@ -1,0 +1,155 @@
+# Cisco C8000v — us-east4, zone a.
+- name:
+    explicit: adt-lab-cisco-use4-a
+  description: "Cisco C8000v BYOL — us-east4-a, WAN1/WAN2/LAN RA spokes"
+  project_id: rteller-demo-svc-e265-aaac
+  zone: us-east4-a
+  vendor: cisco
+  image:
+    resolved: projects/cisco-public/global/images/cisco-c8k-17-16-01a-byol
+  machine_type: n2-standard-4
+  min_cpu_platform: "Intel Cascade Lake"
+  network_tags: [adt-lab-cisco, allow-ssh]
+  bootstrap:
+    ssh_keys:
+      - explicit: adt-lab-cisco-ssh-key
+    cisco:
+      config_lines:
+        - "interface Loopback99"
+        - " ip address 10.99.99.41 255.255.255.255"
+        - "!"
+        - "router bgp 65100"
+        - " bgp router-id 172.16.101.3"
+        - " bgp log-neighbor-changes"
+        - " neighbor 10.0.101.5 remote-as 65036"
+        - " neighbor 10.0.101.5 description CR-wan1-use4-nic0"
+        - " neighbor 10.0.101.5 ebgp-multihop 2"
+        - " neighbor 10.0.101.5 timers 20 60"
+        - " neighbor 10.0.101.6 remote-as 65036"
+        - " neighbor 10.0.101.6 description CR-wan1-use4-nic1"
+        - " neighbor 10.0.101.6 ebgp-multihop 2"
+        - " neighbor 10.0.101.6 timers 20 60"
+        - " neighbor 10.0.101.4 remote-as 65100"
+        - " neighbor 10.0.101.4 timers 20 60"
+        - " neighbor 10.0.111.5 remote-as 65038"
+        - " neighbor 10.0.111.5 description CR-wan2-use4-nic0"
+        - " neighbor 10.0.111.5 ebgp-multihop 2"
+        - " neighbor 10.0.111.5 timers 20 60"
+        - " neighbor 10.0.111.6 remote-as 65038"
+        - " neighbor 10.0.111.6 description CR-wan2-use4-nic1"
+        - " neighbor 10.0.111.6 ebgp-multihop 2"
+        - " neighbor 10.0.111.6 timers 20 60"
+        - " neighbor 10.0.111.4 remote-as 65100"
+        - " neighbor 10.0.111.4 timers 20 60"
+        - " neighbor 172.16.101.4 remote-as 65100"
+        - " neighbor 172.16.101.4 timers 20 60"
+        - " neighbor 172.16.101.5 remote-as 65034"
+        - " neighbor 172.16.101.5 description CR-lan-use4-nic0"
+        - " neighbor 172.16.101.5 ebgp-multihop 2"
+        - " neighbor 172.16.101.5 timers 20 60"
+        - " neighbor 172.16.101.6 remote-as 65034"
+        - " neighbor 172.16.101.6 description CR-lan-use4-nic1"
+        - " neighbor 172.16.101.6 ebgp-multihop 2"
+        - " neighbor 172.16.101.6 timers 20 60"
+        - " !"
+        - " address-family ipv4"
+        - "  network 10.99.99.41 mask 255.255.255.255"
+        - "  neighbor 10.0.101.5 activate"
+        - "  neighbor 10.0.101.5 route-map RM-INT-OUT out"
+        - "  neighbor 10.0.101.6 activate"
+        - "  neighbor 10.0.101.6 route-map RM-INT-OUT out"
+        - "  neighbor 10.0.101.4 activate"
+        - "  neighbor 10.0.101.4 route-map RM-HB-IN in"
+        - "  neighbor 10.0.101.4 route-map RM-HB-OUT out"
+        - "  neighbor 10.0.111.5 activate"
+        - "  neighbor 10.0.111.5 route-map RM-INT-OUT out"
+        - "  neighbor 10.0.111.6 activate"
+        - "  neighbor 10.0.111.6 route-map RM-INT-OUT out"
+        - "  neighbor 10.0.111.4 activate"
+        - "  neighbor 10.0.111.4 route-map RM-HB-IN in"
+        - "  neighbor 10.0.111.4 route-map RM-HB-OUT out"
+        - "  neighbor 172.16.101.4 activate"
+        - "  neighbor 172.16.101.4 route-map RM-HB-IN in"
+        - "  neighbor 172.16.101.4 route-map RM-HB-OUT out"
+        - "  neighbor 172.16.101.5 activate"
+        - "  neighbor 172.16.101.5 route-map RM-INT-OUT out"
+        - "  neighbor 172.16.101.6 activate"
+        - "  neighbor 172.16.101.6 route-map RM-INT-OUT out"
+        - " exit-address-family"
+        - "!"
+        - "ip bgp-community new-format"
+        - "ip community-list standard CM-HB permit 65100:99"
+        - "!"
+        - "ip route 10.0.0.0 255.255.0.0 Null0"
+        - "ip route 172.16.0.0 255.255.0.0 Null0"
+        - "!"
+        - "ip prefix-list PL-HB-IN seq 10 permit 10.99.99.42/32"
+        - "ip prefix-list PL-HB-OWN seq 10 permit 10.99.99.41/32"
+        - "ip prefix-list PL-HEATBEAT seq 10 permit 10.99.99.42/32"
+        - "ip prefix-list PL-SUMMARY seq 10 permit 10.0.1.0/24"
+        - "ip prefix-list PL-SUMMARY seq 15 permit 10.0.2.0/24"
+        - "ip prefix-list PL-SUMMARY seq 20 permit 10.0.11.0/24"
+        - "ip prefix-list PL-SUMMARY seq 25 permit 10.0.12.0/24"
+        - "ip prefix-list PL-SUMMARY seq 30 permit 10.0.101.0/24"
+        - "ip prefix-list PL-SUMMARY seq 35 permit 10.0.102.0/24"
+        - "ip prefix-list PL-SUMMARY seq 40 permit 10.0.111.0/24"
+        - "ip prefix-list PL-SUMMARY seq 45 permit 10.0.112.0/24"
+        - "ip prefix-list PL-SUMMARY seq 50 permit 10.0.201.0/24"
+        - "ip prefix-list PL-SUMMARY seq 55 permit 10.0.202.0/24"
+        - "ip prefix-list PL-SUMMARY seq 60 permit 10.0.211.0/24"
+        - "ip prefix-list PL-SUMMARY seq 65 permit 10.0.212.0/24"
+        - "ip prefix-list PL-SUMMARY seq 70 permit 172.16.1.0/24"
+        - "ip prefix-list PL-SUMMARY seq 75 permit 172.16.101.0/24"
+        - "ip prefix-list PL-SUMMARY seq 80 permit 172.16.201.0/24"
+        - "ip prefix-list PL-SUMMARY seq 85 permit 192.168.1.0/24"
+        - "ip prefix-list PL-SUMMARY seq 90 permit 192.168.2.0/24"
+        - "ip prefix-list PL-SUMMARY seq 95 permit 192.168.21.0/24"
+        - "ip prefix-list PL-SUMMARY seq 100 permit 192.168.101.0/24"
+        - "ip prefix-list PL-SUMMARY seq 105 permit 192.168.102.0/24"
+        - "ip prefix-list PL-SUMMARY seq 110 permit 192.168.121.0/24"
+        - "ip prefix-list PL-SUMMARY seq 115 permit 192.168.201.0/24"
+        - "ip prefix-list PL-SUMMARY seq 120 permit 192.168.202.0/24"
+        - "ip prefix-list PL-SUMMARY seq 125 permit 192.168.221.0/24"
+        - "!"
+        - "route-map RM-HB-OUT permit 10"
+        - " match ip address prefix-list PL-HB-OWN"
+        - "route-map RM-HB-OUT deny 20"
+        - "route-map RM-HB-IN permit 10"
+        - " match ip address prefix-list PL-HB-IN"
+        - " set community 65100:99"
+        - "route-map RM-HB-IN deny 20"
+        - "route-map RM-INT-OUT permit 10"
+        - " match ip address prefix-list PL-SUMMARY"
+        - " set metric 125"
+        - "route-map RM-INT-OUT deny 20"
+        - "route-map RM-DEGRADE-INT permit 10"
+        - " match ip address prefix-list PL-SUMMARY"
+        - " set metric 115"
+        - "route-map RM-EXIST permit 10"
+        - " match ip address prefix-list PL-HEATBEAT"
+        - " match community CM-HB"
+  nics:
+    - subnetwork:
+        explicit: lan-mgmt-vpc-s1-use4
+      private_address: 192.168.121.3
+    - subnetwork:
+        explicit: wan1-s1-use4
+      private_address: 10.0.101.3
+      ncc_spoke:
+        join:
+          explicit: wan1-cisco-use4
+        local_asn: 65100
+    - subnetwork:
+        explicit: wan2-s1-use4
+      private_address: 10.0.111.3
+      ncc_spoke:
+        join:
+          explicit: wan2-cisco-use4
+        local_asn: 65100
+    - subnetwork:
+        explicit: lan-transit-vpc1-s2-use4
+      private_address: 172.16.101.3
+      ncc_spoke:
+        join:
+          explicit: lan-cisco-use4
+        local_asn: 65100

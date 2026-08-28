@@ -1,0 +1,27 @@
+# NSI GENEVE ILB — use4-a, NIC2 (north-south-traffic-inspection).
+- name:
+    explicit: nsi-nsti-use4-a
+  description: "NSI GENEVE ILB use4-a — North-South inspection NIC2"
+  project_id: rteller-demo-svc-e265-aaac
+  region: us-east4
+  network:
+    explicit: nsi-data-producer-02
+  subnetwork:
+    explicit: nsti-s1-use4
+  address:
+    explicit: nsi-nsti-vip-use4-a
+  protocol: UDP
+  ports: [6081]
+  global_access: false
+  health_check:
+    protocol: HTTPS
+    port: 443
+    request_path: /unauth/php/health.php
+    interval: 5
+    healthy_threshold: 2
+    unhealthy_threshold: 2
+  nsi:
+    join:
+      explicit: adt-lab-nsti-fleet
+    zone: us-east4-a
+    description: "NSI zonal intercept deployment for us-east4-a (north-south)"

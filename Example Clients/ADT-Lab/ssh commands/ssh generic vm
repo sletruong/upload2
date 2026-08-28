@@ -1,0 +1,40 @@
+# ─── Test VMs — wan1-vpc1 (us-central1) ───────────────────────────────────────
+
+gcloud compute start-iap-tunnel test-vm-wan1-usc1-a 22 --local-host-port=localhost:2222 --zone us-central1-a --project rteller-demo-svc-e265-aaac
+gcloud compute start-iap-tunnel test-vm-wan1-usc1-b 22 --local-host-port=localhost:2223--zone us-central1-b --project rteller-demo-svc-e265-aaac
+gcloud compute start-iap-tunnel test-vm-wan1-usc1-c 22 --local-host-port=localhost:2224 --zone us-central1-c --project rteller-demo-svc-e265-aaac
+gcloud compute start-iap-tunnel test-vm-wan1-usc1-f 22 --local-host-port=localhost:2225 --zone us-central1-f --project rteller-demo-svc-e265-aaac
+
+# ─── Test VMs — wan1-vpc1 (us-east4) ──────────────────────────────────────────
+
+gcloud compute start-iap-tunnel test-vm-wan1-use4-a 22 --local-host-port=localhost:2226--zone us-east4-a --project rteller-demo-svc-e265-aaac
+gcloud compute start-iap-tunnel test-vm-wan1-use4-b 22 --local-host-port=localhost:2227 --zone us-east4-b --project rteller-demo-svc-e265-aaac
+gcloud compute start-iap-tunnel test-vm-wan1-use4-c 22 --local-host-port=localhost:2228 --zone us-east4-c --project rteller-demo-svc-e265-aaac
+
+# ─── Test VMs — wan2-vpc1 (us-central1) ───────────────────────────────────────
+
+gcloud compute start-iap-tunnel test-vm-wan2-usc1-a 22 --local-host-port=localhost:2229 --zone us-central1-a --project rteller-demo-svc-e265-aaac
+gcloud compute start-iap-tunnel test-vm-wan2-usc1-b 22 --local-host-port=localhost:2230 --zone us-central1-b --project rteller-demo-svc-e265-aaac
+gcloud compute start-iap-tunnel test-vm-wan2-usc1-c 22 --local-host-port=localhost:2231 --zone us-central1-c --project rteller-demo-svc-e265-aaac
+gcloud compute start-iap-tunnel test-vm-wan2-usc1-f 22 --local-host-port=localhost:2232 --zone us-central1-f --project rteller-demo-svc-e265-aaac
+
+# ─── Test VMs — wan2-vpc1 (us-east4) ──────────────────────────────────────────
+
+gcloud compute start-iap-tunnel test-vm-wan2-use4-a 22 --local-host-port=localhost:2233 --zone us-east4-a --project rteller-demo-svc-e265-aaac
+gcloud compute start-iap-tunnel test-vm-wan2-use4-b 22 --local-host-port=localhost:2234 --zone us-east4-b --project rteller-demo-svc-e265-aaac
+gcloud compute start-iap-tunnel test-vm-wan2-use4-c 22 --local-host-port=localhost:2235 --zone us-east4-c --project rteller-demo-svc-e265-aaac
+
+# ─── SSH (second terminal after tunnel is open) ────────────────────────────────
+
+ssh -i ~/.ssh/generic-vm -p 2222 admin@localhost
+ssh -i ~/.ssh/generic-vm -p 2223 admin@localhost
+ssh -i ~/.ssh/generic-vm -p 2224 admin@localhost
+ssh -i ~/.ssh/generic-vm -p 2225 admin@localhost
+ssh -i ~/.ssh/generic-vm -p 2226 admin@localhost
+ssh -i ~/.ssh/generic-vm -p 2227 admin@localhost
+ssh -i ~/.ssh/generic-vm -p 2228 admin@localhost
+ssh -i ~/.ssh/generic-vm -p 2229 admin@localhost
+ssh -i ~/.ssh/generic-vm -p 2230 admin@localhost
+ssh -i ~/.ssh/generic-vm -p 2231 admin@localhost
+ssh -i ~/.ssh/generic-vm -p 2232 admin@localhost
+ssh -i ~/.ssh/generic-vm -p 2233 admin@localhost

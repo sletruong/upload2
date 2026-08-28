@@ -1,0 +1,15 @@
+# NCC RA spoke — Cisco WAN2 leg in us-east4.
+- name:
+    explicit: wan2-cisco-use4
+  type: router_appliance
+  description: "Cisco C8000v WAN2 RA spoke — us-east4"
+  hub:
+    explicit: wan2-ncc-hub
+  group: default
+  include_import_ranges: ["ALL_IPV4_RANGES"]
+  cloud_router:
+    router:
+      explicit: cr-wan2-adt1-use4
+    interfaces:
+      - explicit: int-wan2-adt1-use4-0
+      - explicit: int-wan2-adt1-use4-1

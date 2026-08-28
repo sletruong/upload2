@@ -1,0 +1,173 @@
+# WAN2 VPC — Cisco NIC 2 (GigabitEthernet3) and Cloud Router NCC interfaces.
+# NCC VPC spoke joins wan2-ncc-hub (mesh, default group).
+- name:
+    explicit: wan2-vpc1
+  description: "WAN2 VPC - Cisco C8K NIC2 + NCC RA spoke peering"
+  firewall_policy_enforcement_order: BEFORE_CLASSIC_FIREWALL
+
+  subnetworks:
+    - name:
+        explicit: wan2-s1-usc1
+      region: us-central1
+      ipv4_cidr: 10.0.11.0/24
+      description: "WAN2 primary subnet us-central1 - Cisco Gi3 + CR NCC interfaces"
+    - name:
+        explicit: wan2-s2-usc1
+      region: us-central1
+      ipv4_cidr: 10.0.12.0/24
+      description: "WAN2 secondary subnet us-central1 - test VMs"
+    - name:
+        explicit: wan2-s1-use4
+      region: us-east4
+      ipv4_cidr: 10.0.111.0/24
+      description: "WAN2 primary subnet us-east4 - Cisco Gi3 + CR NCC interfaces"
+    - name:
+        explicit: wan2-s2-use4
+      region: us-east4
+      ipv4_cidr: 10.0.112.0/24
+      description: "WAN2 secondary subnet us-east4 - test VMs"
+    - name:
+        explicit: wan2-s1-usw2
+      region: us-west2
+      ipv4_cidr: 10.0.211.0/24
+      description: "WAN2 primary subnet us-west2 - Cisco Gi3 + CR NCC interfaces"
+    - name:
+        explicit: wan2-s2-usw2
+      region: us-west2
+      ipv4_cidr: 10.0.212.0/24
+      description: "WAN2 secondary subnet us-west2 - test VMs"
+
+  ncc_spokes:
+    vpc:
+      group: default
+      name:
+        explicit: wan2-vpc1-spoke
+      hub:
+        explicit: wan2-ncc-hub
+
+  routers:
+    - name:
+        explicit: cr-wan2-adt1-usc1
+      region: us-central1
+      bgp:
+        asn: 65037
+      interfaces:
+        - name:
+            explicit: int-wan2-adt1-usc1-0
+          subnetwork:
+            explicit: wan2-s1-usc1
+          private_address: 10.0.11.5
+        - name:
+            explicit: int-wan2-adt1-usc1-1
+          subnetwork:
+            explicit: wan2-s1-usc1
+          private_address: 10.0.11.6
+          redundant_interface: int-wan2-adt1-usc1-0
+    - name:
+        explicit: cr-wan2-adt1-use4
+      region: us-east4
+      bgp:
+        asn: 65038
+      interfaces:
+        - name:
+            explicit: int-wan2-adt1-use4-0
+          subnetwork:
+            explicit: wan2-s1-use4
+          private_address: 10.0.111.5
+        - name:
+            explicit: int-wan2-adt1-use4-1
+          subnetwork:
+            explicit: wan2-s1-use4
+          private_address: 10.0.111.6
+          redundant_interface: int-wan2-adt1-use4-0
+    - name:
+        explicit: cr-wan2-adt1-usw2
+      region: us-west2
+      bgp:
+        asn: 65041
+      interfaces:
+        - name:
+            explicit: int-wan2-adt1-usw2-0
+          subnetwork:
+            explicit: wan2-s1-usw2
+          private_address: 10.0.211.5
+        - name:
+            explicit: int-wan2-adt1-usw2-1
+          subnetwork:
+            explicit: wan2-s1-usw2
+          private_address: 10.0.211.6
+          redundant_interface: int-wan2-adt1-usw2-0
+
+  firewall_rules:
+    - name:
+        explicit: fw-wan2-allow-bgp
+      description: "Allow BGP (TCP/179) between Cisco Gi3 and Cloud Router NCC interfaces"
+      direction: INGRESS
+      action: allow
+      source_ranges:
+        - 10.0.11.0/24
+        - 10.0.111.0/24
+        - 10.0.211.0/24
+      layer4:
+        - protocol: tcp
+          ports: ["179"]
+    - name:
+        explicit: fw-wan2-allow-iap-ssh
+      description: "Allow SSH into test VMs via GCP IAP"
+      direction: INGRESS
+      action: allow
+      source_ranges: ["35.235.240.0/20"]
+      target_network_tags: [test-vm]
+      layer4:
+        - protocol: tcp
+          ports: ["22"]
+    - name:
+        explicit: fw-wan2-allow-icmp
+      description: "Allow ICMP from all RFC1918 ranges for routing verification"
+      direction: INGRESS
+      action: allow
+      source_ranges:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+      layer4:
+        - protocol: icmp
+
+  addresses:
+    # Cisco C8000v WAN2 NIC (Gi3) — reserved per zone pair per region.
+    - name:
+        explicit: cisco-usc1-a-wan2
+      region: us-central1
+      subnetwork:
+        explicit: wan2-s1-usc1
+      ipv4_address: 10.0.11.3
+    - name:
+        explicit: cisco-usc1-b-wan2
+      region: us-central1
+      subnetwork:
+        explicit: wan2-s1-usc1
+      ipv4_address: 10.0.11.4
+    - name:
+        explicit: cisco-use4-a-wan2
+      region: us-east4
+      subnetwork:
+        explicit: wan2-s1-use4
+      ipv4_address: 10.0.111.3
+    - name:
+        explicit: cisco-use4-b-wan2
+      region: us-east4
+      subnetwork:
+        explicit: wan2-s1-use4
+      ipv4_address: 10.0.111.4
+    - name:
+        explicit: cisco-usw2-a-wan2
+      region: us-west2
+      subnetwork:
+        explicit: wan2-s1-usw2
+      ipv4_address: 10.0.211.3
+    - name:
+        explicit: cisco-usw2-b-wan2
+      region: us-west2
+      subnetwork:
+        explicit: wan2-s1-usw2
+      ipv4_address: 10.0.211.4

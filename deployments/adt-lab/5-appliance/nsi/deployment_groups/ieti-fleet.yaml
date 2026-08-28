@@ -1,0 +1,11 @@
+# NSI PRODUCER deployment group — Palo Alto fleet in interzone-traffic-inspection (NIC4).
+- name:
+    explicit: adt-lab-ieti-fleet
+  description: "ADT-Lab NSI intercept deployment group — Palo Alto NIC4 in interzone-traffic-inspection"
+  project_id: rteller-demo-svc-e265-aaac
+  network:
+    explicit: nsi-data-producer-04
+  labels:
+    env: lab
+    team: adt
+    appliance: palo

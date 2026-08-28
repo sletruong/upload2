@@ -1,0 +1,13 @@
+# NSI INTERCEPT SPG — east-west Cisco router traffic (Palo NIC1).
+# Steers traffic on wan1-vpc1, wan2-vpc1, lan-transit-vpc1 through the Palo
+# NIC1 inspection path (east-west-traffic-inspection VPC, ewti fleet).
+#
+# endpoint_group is {explicit:} into tier-5 (adt-lab-nsi-inspect). Plan-time-
+# existence-blind — stage order 5-before-6 is the existence guarantee.
+- name:
+    explicit: spg-adt-lab-ewti
+  description: "ADT-Lab NSI INTERCEPT SPG — east-west Cisco router traffic (Palo NIC1)"
+  project_id: rteller-demo-svc-e265-aaac
+  kind: INTERCEPT
+  endpoint_group:
+    explicit: adt-lab-nsi-inspect

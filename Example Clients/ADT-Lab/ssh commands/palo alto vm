@@ -1,0 +1,44 @@
+
+ssh-keygen -t rsa -f /Users/gaurav.maheshwari/.ssh/adt-lab-palo-alto -C admin
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxcPY/1riYHzIS0kixnvWIEkL3aarVSUTelYKz+7Iv4uykyGl8XQu9CJMrIexVHX+g3rILrsHC7hT1oWF3e92zLsZbRvyytPCYJ39CLMmw5azUlGmANDQOiPsgsFR+08NupOtwl/jSHQ5jR2Tlx4e4pS5Ol2Ix1vnAEOiNhDd7QeeATIzH5Vef95ukpsgjPyTF8YK0uArznwmNzRv3cxy9bjP5q5QBR1+qbGMGxEDJ89KzKMX9tnuWtqCOXuFccPtiKrIWdUp9pszJ2UFaYsL/9JUBMW6MryVrRtLUrP4WmVr8skEjoBD6hNqqIv0RM4sxOW7859sTmXqg3jJ6YczZ5DGy3DC4eJ3SzBmKWxLaXDCP9PxQpkJsAP7cugLAW3QDyw6isGtGGgrB5X3lWd4WZK80lbbHCQIlKcK2Ak/B8l9QsDcvx4g1P1yllaoHy2//u1FGyUxS0XBFJ8DGmg5eWYiItc1kHbItcMbtGz1mfmUGp3pjWunmNJfb13XiV+8= admin
+
+
+
+
+gcloud compute ssh --zone "us-central1-a" "admin@adt-lab-palo-usc1-a" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac"
+gcloud compute ssh --zone "us-central1-b" "admin@adt-lab-palo-usc1-b" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac"
+gcloud compute ssh --zone "us-east4-a" "admin@adt-lab-palo-use4-a" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac"
+gcloud compute ssh --zone "us-east4-b" "admin@adt-lab-palo-use4-b" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac"
+
+
+
+gcloud compute ssh --zone "us-central1-b" "admin@adt-lab-palo-usc1-b" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac"
+gcloud compute ssh --zone "us-east4-a" "admin@adt-lab-palo-use4-a" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac"
+gcloud compute ssh --zone "us-east4-b" "admin@adt-lab-palo-use4-b" --tunnel-through-iap --project "rteller-demo-svc-e265-aaac"
+
+how to reset the password for palo alto firewall
+================================================
+configure
+set mgt-config users admin password Admin@1234
+commit
+
+gcloud compute start-iap-tunnel adt-lab-palo-usc1-a 443 \
+    --local-host-port=localhost:8441 \
+    --zone=us-central1-a \
+    --project=rteller-demo-svc-e265-aaac
+
+gcloud compute start-iap-tunnel adt-lab-palo-usc1-b 443 \
+    --local-host-port=localhost:8442 \
+    --zone=us-central1-b \
+    --project=rteller-demo-svc-e265-aaac
+
+gcloud compute start-iap-tunnel adt-lab-palo-use4-a 443 \
+    --local-host-port=localhost:8443 \
+    --zone=us-east4-a \
+    --project=rteller-demo-svc-e265-aaac
+
+gcloud compute start-iap-tunnel adt-lab-palo-use4-b 443 \
+    --local-host-port=localhost:8444 \
+    --zone=us-east4-b \
+    --project=rteller-demo-svc-e265-aaac

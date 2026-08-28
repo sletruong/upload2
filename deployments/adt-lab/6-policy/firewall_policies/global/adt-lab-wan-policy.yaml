@@ -1,0 +1,17 @@
+# Global network firewall policy — WAN VPCs (Cisco router traffic).
+# Binds wan1-vpc1, wan2-vpc1, lan-transit-vpc1. Rules in the sibling
+# adt-lab-wan-policy.rules/ folder steer all traffic to the east-west
+# inspection path (ewti SPG, Palo NIC1, east-west-traffic-inspection VPC).
+#
+# ⚠ lan-mgmt-vpc is DELIBERATELY ABSENT. Binding the management plane VPC
+# would push admin SSH through the Palo fleet; a fleet outage would make the
+# boxes unreachable. Admin access to mgmt is a classic IAP rule on the VPC
+# doc, which needs no policy here.
+name:
+  explicit: adt-lab-wan-policy
+mode: create
+description: "ADT-Lab WAN policy — steer Cisco router traffic to east-west inspection (Palo NIC1)"
+networks:
+  - explicit: wan1-vpc1
+  - explicit: wan2-vpc1
+  - explicit: lan-transit-vpc1

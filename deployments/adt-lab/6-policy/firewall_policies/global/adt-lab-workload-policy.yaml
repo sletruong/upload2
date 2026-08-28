@@ -1,0 +1,17 @@
+# Global network firewall policy — workload VPC.
+# Binds lan-workload-vpc1. Rules in the sibling adt-lab-workload-policy.rules/
+# folder steer traffic by class:
+#   RFC1918 traffic  → interzone inspection (ieti SPG, Palo NIC4)
+#   internet traffic → north-south inspection (nsti SPG, Palo NIC2)
+#
+# Priority ordering ensures RFC1918 rules (2000/2100) match before the
+# catch-all internet rules (3000/3100).
+#
+# ⚠ lan-mgmt-vpc is DELIBERATELY ABSENT — management plane must not route
+# through the fleet. Nothing should ever add mgmt here.
+name:
+  explicit: adt-lab-workload-policy
+mode: create
+description: "ADT-Lab workload policy — RFC1918 to interzone (NIC4), internet to north-south (NIC2)"
+networks:
+  - explicit: lan-workload-vpc1

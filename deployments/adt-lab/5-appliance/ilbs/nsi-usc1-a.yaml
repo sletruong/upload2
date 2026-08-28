@@ -1,0 +1,32 @@
+# # NSI GENEVE ILB — us-central1, zone a. Palo usc1-a is the backend.
+# # ⚠ Protocol UDP + port 6081 is mandatory for NSI (GENEVE encapsulation).
+# # ⚠ global_access MUST be false — NSI intercept deployment API rejects it.
+# # ⚠ One forwarding rule = one intercept deployment = one zone.
+# # Health check: HTTPS/443 /unauth/php/health.php — PAN-OS only answers on
+# # nic1 dataplane at this path; TCP/22 goes to the management NIC (nic0).
+# - name:
+#     explicit: nsi-usc1-a
+#   description: "NSI GENEVE ILB us-central1-a — Palo Alto intercept endpoint"
+#   project_id: rteller-demo-svc-e265-aaac
+#   region: us-central1
+#   network:
+#     explicit: nsi-data-producer-01
+#   subnetwork:
+#     explicit: ewti-s1-usc1
+#   address:
+#     explicit: nsi-vip-usc1-a
+#   protocol: UDP
+#   ports: [6081]
+#   global_access: false
+#   health_check:
+#     protocol: HTTPS
+#     port: 443
+#     request_path: /unauth/php/health.php
+#     interval: 5
+#     healthy_threshold: 2
+#     unhealthy_threshold: 2
+#   nsi:
+#     join:
+#       explicit: adt-lab-nsi-fleet
+#     zone: us-central1-a
+#     description: "NSI zonal intercept deployment for us-central1-a"

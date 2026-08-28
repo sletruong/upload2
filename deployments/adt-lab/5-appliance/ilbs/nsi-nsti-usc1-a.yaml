@@ -1,0 +1,27 @@
+# # NSI GENEVE ILB — usc1-a, NIC2 (north-south-traffic-inspection).
+# - name:
+#     explicit: nsi-nsti-usc1-a
+#   description: "NSI GENEVE ILB usc1-a — North-South inspection NIC2"
+#   project_id: rteller-demo-svc-e265-aaac
+#   region: us-central1
+#   network:
+#     explicit: nsi-data-producer-02
+#   subnetwork:
+#     explicit: nsti-s1-usc1
+#   address:
+#     explicit: nsi-nsti-vip-usc1-a
+#   protocol: UDP
+#   ports: [6081]
+#   global_access: false
+#   health_check:
+#     protocol: HTTPS
+#     port: 443
+#     request_path: /unauth/php/health.php
+#     interval: 5
+#     healthy_threshold: 2
+#     unhealthy_threshold: 2
+#   nsi:
+#     join:
+#       explicit: adt-lab-nsti-fleet
+#     zone: us-central1-a
+#     description: "NSI zonal intercept deployment for us-central1-a (north-south)"

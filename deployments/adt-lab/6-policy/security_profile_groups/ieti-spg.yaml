@@ -1,0 +1,12 @@
+# NSI INTERCEPT SPG — interzone workload traffic (Palo NIC4).
+# Steers RFC1918 workload-to-workload traffic through the Palo NIC4 inspection
+# path (interzone-traffic-inspection VPC, ieti fleet).
+#
+# endpoint_group is {explicit:} into tier-5 (adt-lab-ieti-inspect).
+- name:
+    explicit: spg-adt-lab-ieti
+  description: "ADT-Lab NSI INTERCEPT SPG — interzone workload traffic (Palo NIC4)"
+  project_id: rteller-demo-svc-e265-aaac
+  kind: INTERCEPT
+  endpoint_group:
+    explicit: adt-lab-ieti-inspect

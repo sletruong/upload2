@@ -1,0 +1,12 @@
+# NSI INTERCEPT SPG — north-south internet traffic (Palo NIC2).
+# Steers internet-bound and internet-sourced traffic through the Palo NIC2
+# inspection path (north-south-traffic-inspection VPC, nsti fleet).
+#
+# endpoint_group is {explicit:} into tier-5 (adt-lab-nsti-inspect).
+- name:
+    explicit: spg-adt-lab-nsti
+  description: "ADT-Lab NSI INTERCEPT SPG — north-south internet traffic (Palo NIC2)"
+  project_id: rteller-demo-svc-e265-aaac
+  kind: INTERCEPT
+  endpoint_group:
+    explicit: adt-lab-nsti-inspect

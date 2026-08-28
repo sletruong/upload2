@@ -1,0 +1,58 @@
+# # Palo Alto VM-Series — us-central1, zone a.
+# # NIC 0 = management (lan-mgmt-vpc). PAN-OS treats nic0 as management by default.
+# # NIC 1 = east-west traffic inspection (ethernet1/1). NSI GENEVE arrives here.
+# # NIC 2 = north-south traffic inspection (ethernet1/2).
+# # NIC 3 = intrazone traffic inspection (ethernet1/3).
+# # NIC 4 = interzone traffic inspection (ethernet1/4).
+# #
+# # ⚠ Bundle3 image required for NSI. BYOL has no vm_series plugin → geneve-inspect
+# # metadata is delivered but consumed by nothing → intercept silently fails.
+# # ⚠ geneve-inspect:enable uses COLON (not =). The framework writes this once.
+# # ⚠ n4d-standard-16 uses AMD EPYC (Genoa) — min_cpu_platform not required.
+# - name:
+#     explicit: adt-lab-palo-usc1-a
+#   description: "Palo Alto VM-Series bundle3 — us-central1-a, NSI GENEVE intercept"
+#   project_id: rteller-demo-svc-e265-aaac
+#   zone: us-central1-a
+#   vendor: palo_alto
+#   image:
+#     resolved: projects/paloaltonetworksgcp-public/global/images/vmseries-flex-bundle3-1217
+#   machine_type: c4-standard-4
+#   min_cpu_platform: "Intel Emerald Rapids"
+#   network_tags: [adt-lab-palo, allow-ssh]
+#   bootstrap:
+#     ssh_keys:
+#       - explicit: adt-lab-palo-ssh-key
+#     palo:
+#       geneve_inspect: true
+#       dhcp_client: true
+#       dns_primary: 169.254.169.254
+#   nics:
+#     - subnetwork:
+#         explicit: lan-mgmt-vpc-s1-usc1
+#       private_address: 192.168.21.10
+#     - subnetwork:
+#         explicit: ewti-s1-usc1
+#       private_address: 192.168.31.10
+#     - subnetwork:
+#         explicit: nsti-s1-usc1
+#       private_address: 192.168.41.10
+#     - subnetwork:
+#         explicit: izti-s1-usc1
+#       private_address: 192.168.51.10
+#     - subnetwork:
+#         explicit: ieti-s1-usc1
+#       private_address: 192.168.61.10
+#   ilbs:
+#     - join:
+#         explicit: nsi-usc1-a
+#       nic: 1
+#     - join:
+#         explicit: nsi-nsti-usc1-a
+#       nic: 2
+#     - join:
+#         explicit: nsi-izti-usc1-a
+#       nic: 3
+#     - join:
+#         explicit: nsi-ieti-usc1-a
+#       nic: 4
